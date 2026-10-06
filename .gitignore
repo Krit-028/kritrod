@@ -1,0 +1,5 @@
+.vercel
+node_modules
+*.bak.html
+.DS_Store
+Thumbs.db

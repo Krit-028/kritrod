@@ -1,0 +1,1981 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="KritRod 3D Showroom — Civic e:HEV, Corolla Altis, Aventador: โมเดล 3 มิติ blueprint เครื่องยนต์ และช่วงล่าง">
+<title>KritRod 3D Showroom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Bai+Jamjuree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Kanit:ital,wght@0,600;1,700;1,800&family=Anuphan:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Trirong:ital,wght@0,300;0,400;1,300&display=swap">
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0c0e11; --panel:#14171c; --panel2:#1a1e24; --ink:#eceff2; --muted:#9aa3ad; --faint:#626b75; --line:#262b33;
+    --red:#c8323a; --bp:#123f6e; --bp-line:#cfe3ff; --gold:#d9b25f; --stage:#101318;
+    --display:"Chakra Petch","Bai Jamjuree",system-ui,sans-serif;
+    --body:"Bai Jamjuree","Noto Sans Thai",system-ui,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.55; margin:0; }
+  a{ color:inherit; }
+  .wrap{ max-width:1200px; margin:0 auto; padding-inline:16px; }
+
+  nav.top{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding-block:16px; flex-wrap:wrap; }
+  .brand{ font-family:var(--display); font-weight:700; font-size:22px; letter-spacing:.02em; display:flex; align-items:center; gap:10px; }
+  .brand i{ width:26px; height:10px; background:var(--red); display:inline-block; transform:skewX(-24deg); }
+  .brand span{ color:var(--muted); font-weight:500; font-size:13px; letter-spacing:.14em; }
+  nav.top ul{ list-style:none; display:flex; gap:18px; margin:0; padding:0; font-size:13.5px; color:var(--muted); flex-wrap:wrap; }
+  nav.top a{ text-decoration:none; } nav.top a:hover{ color:var(--ink); }
+
+  .hero-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:16px 32px; flex-wrap:wrap; padding-block:18px 14px; }
+  .hero h1{ font-family:var(--display); font-weight:700; font-size:clamp(34px,6vw,64px); line-height:.95; margin:0; letter-spacing:-.01em; text-wrap:balance; }
+  .hero h1 em{ font-style:normal; color:var(--red); }
+  .hero p.lede{ margin:0; max-width:48ch; color:var(--muted); }
+
+  .carbar{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .carbar button{ background:var(--panel); border:1px solid var(--line); color:var(--ink); border-radius:4px; padding:8px 14px; text-align:left; cursor:pointer; font:inherit; display:flex; flex-direction:column; gap:1px; flex:1 1 150px; max-width:260px; }
+  .carbar button b{ font-family:var(--display); font-size:16px; font-weight:600; }
+  .carbar button span{ font-size:11.5px; color:var(--muted); font-family:var(--mono); letter-spacing:.04em; }
+  .carbar button.on{ border-color:var(--cc); box-shadow:inset 0 -3px 0 var(--cc); }
+  .carbar button:not(.on):hover{ border-color:#3a414b; }
+
+  .stage{ position:relative; width:100%; max-width:100%; aspect-ratio:16/9; max-height:620px; min-height:340px; border-radius:6px 6px 0 0; overflow:hidden; background:var(--stage); border:1px solid var(--line); }
+  @media (max-width:640px){ .stage{ aspect-ratio:4/5; } }
+  .stage canvas{ display:block; width:100%; height:100%; touch-action:none; }
+  .overlay{ position:absolute; inset:0; pointer-events:none; }
+  .overlay svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .dim{ position:absolute; font-family:var(--mono); font-size:11.5px; color:var(--bp-line); background:rgba(18,63,110,.85); padding:1px 6px; border-radius:2px; transform:translate(-50%,-50%); white-space:nowrap; }
+  .plabel{ position:absolute; font-family:var(--mono); font-size:11px; color:#fff; background:rgba(12,14,17,.8); border:1px solid rgba(255,255,255,.18);
+    padding:2px 7px; border-radius:3px; transform:translate(-50%,-140%); white-space:nowrap; pointer-events:auto; cursor:pointer; }
+  .plabel.on{ background:var(--red); border-color:var(--red); }
+
+  .modes{ position:absolute; top:12px; left:12px; display:flex; background:rgba(12,14,17,.72); border:1px solid rgba(255,255,255,.12); border-radius:4px; overflow:hidden; backdrop-filter:blur(6px); }
+  .modes button{ border:0; background:transparent; color:var(--muted); font:600 13px var(--display); letter-spacing:.06em; padding:9px 14px; cursor:pointer; text-transform:uppercase; }
+  .modes button.on{ background:var(--ink); color:var(--bg); }
+  .modes button:not(.on):hover{ color:var(--ink); }
+  .tools{ position:absolute; left:12px; right:12px; bottom:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; pointer-events:none; }
+  .tools > *{ pointer-events:auto; }
+  .toolbox{ background:rgba(12,14,17,.75); border:1px solid rgba(255,255,255,.12); border-radius:4px; padding:8px 10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; backdrop-filter:blur(6px); font-size:12.5px; color:var(--muted); }
+  .swatch{ width:22px; height:22px; border-radius:50%; border:2px solid rgba(255,255,255,.18); cursor:pointer; padding:0; }
+  .swatch.on{ border-color:#fff; }
+  .tbtn{ border:1px solid rgba(255,255,255,.16); background:transparent; color:var(--ink); font:500 12px var(--mono); padding:5px 9px; border-radius:3px; cursor:pointer; }
+  .tbtn.on{ background:var(--bp-line); color:var(--bp); border-color:var(--bp-line); }
+  .toolbox input[type=range]{ width:140px; accent-color:var(--red); }
+  button:focus-visible, input:focus-visible, .plabel:focus-visible, a:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .caption{ font-family:var(--mono); font-size:11px; color:var(--faint); letter-spacing:.08em; }
+  .toolbox .caption{ color:var(--muted); }
+  .credit{ position:absolute; top:12px; right:12px; max-width:min(60%,420px); text-align:right; font-family:var(--mono); font-size:10.5px; color:var(--muted); background:rgba(12,14,17,.6); padding:4px 8px; border-radius:3px; }
+  .credit a{ color:var(--ink); }
+  .loading{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-family:var(--mono); font-size:12.5px; color:var(--ink); background:rgba(12,14,17,.8); border:1px solid rgba(255,255,255,.14); padding:8px 14px; border-radius:4px; pointer-events:none; }
+  .fallback{ position:absolute; inset:0; display:grid; place-items:center; color:var(--muted); padding:24px; text-align:center; }
+
+  .info{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-top:0; border-radius:0 0 6px 6px; }
+  @media (max-width:760px){ .info{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .info div{ background:var(--panel); padding:12px 14px; }
+  .info span{ display:block; font-size:12px; color:var(--muted); }
+  .info b{ font-family:var(--mono); font-weight:500; font-size:18px; font-variant-numeric:tabular-nums; }
+  .info b small{ font-size:12px; color:var(--muted); margin-left:3px; }
+  .approx{ color:var(--gold); font-weight:500; }
+
+  .part-card{ margin-top:14px; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--red); border-radius:4px; padding:14px 16px; }
+  .part-card h3{ margin:0 0 4px; font-family:var(--display); font-size:17px; }
+  .part-card p{ margin:0; color:var(--muted); max-width:70ch; }
+  .part-card .mat{ font-family:var(--mono); font-size:12px; color:var(--gold); margin-top:6px; display:block; }
+  .chpanel{ margin-top:14px; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:14px 16px; display:grid; gap:12px; }
+  .chhead{ display:flex; flex-wrap:wrap; gap:4px 14px; align-items:baseline; }
+  .chhead b{ font-family:var(--display); font-size:17px; font-weight:600; }
+  .chhead span{ color:var(--muted); font-size:13.5px; }
+  .chlayers{ display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:8px; }
+  .chcard{ display:flex; align-items:stretch; background:var(--panel2); border:1px solid var(--line); border-radius:4px; }
+  .chcard.focus{ border-color:var(--gold); box-shadow:inset 0 0 0 1px var(--gold); }
+  .chcard.off .chmain{ opacity:.45; }
+  .chcard.na{ opacity:.35; }
+  .chmain{ flex:1; min-width:0; display:flex; gap:9px; align-items:flex-start; text-align:left; background:transparent; border:0; padding:8px 10px; color:var(--ink); font:inherit; cursor:pointer; }
+  .chmain:disabled, .cheye:disabled{ cursor:not-allowed; }
+  .chmain i{ width:12px; height:12px; border-radius:2px; margin-top:5px; flex:none; }
+  .chmain b{ display:block; font-size:13.5px; font-weight:600; }
+  .chmain small{ display:block; font-size:11.5px; color:var(--muted); line-height:1.35; }
+  .cheye{ flex:none; width:38px; background:transparent; border:0; border-left:1px solid var(--line); color:var(--muted); cursor:pointer; display:grid; place-items:center; }
+  .cheye:not(:disabled):hover{ color:var(--ink); }
+  .chfocus{ background:var(--panel2); border:1px solid var(--line); border-radius:4px; padding:10px 12px; display:grid; gap:8px; }
+  .chfocus b{ font-family:var(--display); font-size:15px; font-weight:600; }
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .chips button{ background:transparent; border:1px solid var(--line); color:var(--ink); font:500 12.5px var(--body); padding:4px 10px; border-radius:999px; cursor:pointer; }
+  .chips button:hover{ border-color:rgba(255,255,255,.4); }
+  .chips button.on{ background:var(--red); border-color:var(--red); }
+  .chhint{ color:var(--muted); font-size:13px; }
+  .pop{ position:absolute; z-index:5; width:max-content; max-width:min(320px, calc(100% - 16px)); background:rgba(12,14,17,.95); border:1px solid rgba(255,255,255,.16); border-left:3px solid var(--red); border-radius:4px; padding:10px 32px 10px 12px; font-size:13px; line-height:1.5; box-shadow:0 8px 24px rgba(0,0,0,.45); }
+  .pop b{ display:block; font-family:var(--display); font-size:15px; font-weight:600; margin-bottom:2px; }
+  .pop p{ margin:0; color:var(--muted); }
+  .pop .mat{ display:block; font-family:var(--mono); font-size:11.5px; color:var(--gold); margin-top:6px; }
+  .pop-x{ position:absolute; top:4px; right:4px; width:26px; height:26px; background:transparent; border:0; color:var(--muted); font-size:18px; line-height:1; cursor:pointer; }
+  .pop-x:hover{ color:var(--ink); }
+  .tip{ position:absolute; z-index:4; pointer-events:none; font-family:var(--mono); font-size:11.5px; color:#fff; background:rgba(12,14,17,.88); border:1px solid rgba(255,255,255,.18); padding:2px 7px; border-radius:3px; white-space:nowrap; transform:translate(14px, -130%); }
+  .chlegend{ display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--muted); align-items:center; }
+  .chlegend i{ display:inline-block; width:14px; height:8px; border-radius:2px; margin-right:6px; vertical-align:middle; }
+  .chtabs{ display:flex; flex-wrap:wrap; gap:6px; border-bottom:1px solid var(--line); padding-bottom:10px; }
+  .chtabs button{ background:transparent; border:1px solid var(--line); color:var(--muted); font:600 13.5px var(--display); letter-spacing:.03em; padding:7px 12px; border-radius:4px; cursor:pointer; }
+  .chtabs button.on{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+  .chtabs button:not(.on):hover{ color:var(--ink); border-color:#3a414b; }
+  .chlede{ margin:0; color:var(--muted); font-size:13.5px; max-width:80ch; }
+
+  section.specs{ padding-block:48px 8px; }
+  .sec-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:18px; border-bottom:1px solid var(--line); padding-bottom:12px; }
+  .sec-head h2{ font-family:var(--display); font-size:clamp(24px,3.4vw,34px); margin:0; line-height:1.05; text-wrap:balance; }
+  .sec-head p{ margin:0; color:var(--muted); max-width:56ch; font-size:14px; }
+  .variants{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; }
+  .variant{ background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:16px; display:flex; flex-direction:column; gap:10px; cursor:pointer; text-align:left; color:var(--ink); font:inherit; }
+  .variant.on{ border-color:var(--vc); box-shadow:inset 0 3px 0 var(--vc); }
+  .variant .code{ font-family:var(--display); font-size:24px; font-weight:700; line-height:1.05; }
+  .variant .code small{ display:block; font-size:12px; color:var(--muted); font-weight:500; letter-spacing:.08em; margin-top:4px; }
+  .variant p{ margin:0; color:var(--muted); font-size:13.5px; }
+  .variant dl{ display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin:0; font-size:13px; margin-top:auto; }
+  .variant dt{ color:var(--muted); } .variant dd{ margin:0; font-family:var(--mono); text-align:right; font-variant-numeric:tabular-nums; }
+
+  .profile{ background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:14px; }
+  .profile .scroll{ overflow-x:auto; }
+  .profile svg{ display:block; width:100%; min-width:520px; height:auto; }
+  .legend{ display:flex; gap:8px 18px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); margin-top:8px; }
+  .legend span{ font-variant-numeric:tabular-nums; }
+  .legend i{ width:14px; height:3px; display:inline-block; margin-right:6px; vertical-align:middle; }
+  .tbl{ overflow-x:auto; background:var(--panel); border:1px solid var(--line); border-radius:6px; margin-top:16px; }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:640px; }
+  th, td{ padding:9px 12px; border-bottom:1px solid var(--line); text-align:right; font-variant-numeric:tabular-nums; vertical-align:top; }
+  th:first-child, td:first-child{ text-align:left; color:var(--muted); }
+  thead th{ font-family:var(--display); font-weight:600; font-size:14px; }
+  thead th small{ display:block; font-family:var(--mono); font-size:11px; color:var(--muted); font-weight:400; }
+  td{ font-family:var(--mono); font-size:13px; }
+  td.sel, th.sel{ background:var(--panel2); }
+  td.na{ color:var(--faint); }
+  footer{ padding-block:24px 40px; color:var(--faint); font-size:12.5px; border-top:1px solid var(--line); margin-top:36px; display:grid; gap:10px; }
+  footer p{ margin:0; max-width:90ch; }
+  footer ul{ margin:0; padding-left:18px; display:grid; gap:2px; }
+  footer a{ color:var(--muted); }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+
+  /* ---- page looks (switcher in the top bar) ------------------------------------------------------------ */
+  .looks{ display:flex; align-items:center; gap:4px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+  .looks span{ margin-right:4px; font-family:var(--mono); letter-spacing:.08em; }
+  .looks button{ background:transparent; border:1px solid var(--line); color:var(--muted); font:500 12px var(--mono); padding:4px 9px; border-radius:3px; cursor:pointer; }
+  .looks button:hover{ color:var(--ink); }
+  .looks button.on{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+  .hero-head{ position:relative; }
+
+  /* Pit Lane: motorsport livery */
+  :root[data-look="track"]{ --bg:#0b1020; --panel:#111a30; --panel2:#17223d; --ink:#f3f5fa; --muted:#9aa7c4; --faint:#5d6a88; --line:#243256; --red:#ff5a1f; --gold:#ffc53d; --stage:#0d1428;
+    --display:"Kanit","Chakra Petch",system-ui,sans-serif; --body:"Anuphan","Bai Jamjuree",system-ui,sans-serif; }
+  [data-look="track"] body{ background:var(--bg) linear-gradient(180deg, rgba(255,90,31,.06), transparent 420px); }
+  [data-look="track"] .brand{ font-family:var(--display); font-style:italic; font-weight:800; text-transform:uppercase; }
+  [data-look="track"] .hero-head{ padding-top:38px; }
+  [data-look="track"] .hero-head::before{ content:""; position:absolute; left:0; top:14px; width:min(440px,62%); height:10px; background:linear-gradient(90deg, var(--red) 0 34%, var(--gold) 34% 67%, #3fa7ff 67%); transform:skewX(-28deg); transform-origin:left; }
+  [data-look="track"] .hero h1{ font-style:italic; font-weight:800; text-transform:uppercase; letter-spacing:-.02em; font-size:clamp(40px,8vw,96px); line-height:.9; }
+  [data-look="track"] .carbar button{ border-radius:0; transform:skewX(-10deg); }
+  [data-look="track"] .carbar button > *{ transform:skewX(10deg); }
+  [data-look="track"] .carbar button b{ font-style:italic; text-transform:uppercase; font-weight:700; }
+  [data-look="track"] .stage{ border-radius:0; box-shadow:inset 0 3px 0 var(--red); }
+  [data-look="track"] .info{ border-radius:0; }
+  [data-look="track"] .modes button{ font-style:italic; }
+  [data-look="track"] .sec-head{ border-bottom:3px solid var(--red); }
+  [data-look="track"] .sec-head h2{ font-style:italic; font-weight:800; text-transform:uppercase; }
+  [data-look="track"] .variant{ border-radius:0; }
+  [data-look="track"] .variant .code{ font-style:italic; text-transform:uppercase; }
+  [data-look="track"] .variant.on{ box-shadow:inset 6px 0 0 var(--vc); }
+
+  /* Drafting: engineering drawing sheet */
+  :root[data-look="drafting"]{ color-scheme:light; --bg:#eef1f0; --panel:#f9fbfa; --panel2:#e7edee; --ink:#12233d; --muted:#4f5d73; --faint:#7c8898; --line:#c7d1d6; --red:#d6452b; --gold:#1f5fae; --stage:#dde3e6;
+    --display:"IBM Plex Sans Thai","Bai Jamjuree",system-ui,sans-serif; --body:"IBM Plex Sans Thai","Bai Jamjuree",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace; }
+  [data-look="drafting"] body{ background-color:var(--bg); background-image:linear-gradient(rgba(31,95,174,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(31,95,174,.07) 1px, transparent 1px); background-size:24px 24px; }
+  [data-look="drafting"] .brand i{ background:var(--ink); transform:none; height:3px; }
+  [data-look="drafting"] .hero-head{ padding-top:34px; border-bottom:2px solid var(--ink); margin-bottom:14px; }
+  [data-look="drafting"] .hero-head::before{ content:"DWG NO. KR-2026-01 · SHEET 1/1 · หน่วย มม."; position:absolute; left:0; top:10px; font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:.08em; }
+  [data-look="drafting"] .hero h1{ font-weight:700; letter-spacing:-.02em; }
+  [data-look="drafting"] .stage{ border:2px solid var(--ink); border-radius:0; }
+  [data-look="drafting"] .info{ border:2px solid var(--ink); border-top:0; border-radius:0; background:var(--ink); }
+  [data-look="drafting"] .info span{ font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em; font-size:11px; }
+  [data-look="drafting"] .carbar button, [data-look="drafting"] .variant, [data-look="drafting"] .profile, [data-look="drafting"] .tbl, [data-look="drafting"] .chpanel, [data-look="drafting"] .part-card{ border-radius:0; border-color:var(--ink); }
+  [data-look="drafting"] .sec-head{ border-bottom:2px solid var(--ink); }
+  [data-look="drafting"] .sec-head h2{ font-weight:700; }
+  [data-look="drafting"] thead th{ font-family:var(--mono); text-transform:uppercase; font-size:12.5px; letter-spacing:.04em; }
+
+  /* Gallery: night showroom */
+  :root[data-look="gallery"]{ --bg:#0f0f13; --panel:#16161b; --panel2:#1c1c22; --ink:#f2eee6; --muted:#a8a398; --faint:#6c685f; --line:#2a2a31; --red:#c9a86a; --gold:#c9a86a; --stage:#121217;
+    --display:"Trirong","Noto Serif Thai",Georgia,serif; --body:"Anuphan","Bai Jamjuree",system-ui,sans-serif; }
+  [data-look="gallery"] .brand{ font-family:var(--display); font-weight:400; letter-spacing:.06em; }
+  [data-look="gallery"] .brand i{ width:8px; height:8px; border-radius:50%; transform:none; }
+  [data-look="gallery"] .hero-head{ padding-block:44px 26px; }
+  [data-look="gallery"] .hero h1{ font-weight:300; font-size:clamp(42px,7.5vw,92px); letter-spacing:.005em; }
+  [data-look="gallery"] .hero h1 em{ font-style:italic; }
+  [data-look="gallery"] .carbar button{ background:transparent; border:0; border-bottom:1px solid var(--line); border-radius:0; }
+  [data-look="gallery"] .carbar button.on{ box-shadow:inset 0 -2px 0 var(--red); }
+  [data-look="gallery"] .carbar button b{ font-family:var(--display); font-weight:400; font-size:18px; }
+  [data-look="gallery"] .stage{ border-color:transparent; border-radius:2px; }
+  [data-look="gallery"] .info{ background:transparent; border:0; gap:0; }
+  [data-look="gallery"] .info div{ background:transparent; border-top:1px solid var(--line); }
+  [data-look="gallery"] .modes button.on{ background:var(--red); color:#15130f; }
+  [data-look="gallery"] .sec-head h2{ font-weight:300; font-size:clamp(28px,4vw,44px); }
+  [data-look="gallery"] .variant{ background:transparent; border-color:var(--line); border-radius:2px; }
+  [data-look="gallery"] .variant .code{ font-family:var(--display); font-weight:400; }
+  [data-look="gallery"] .profile, [data-look="gallery"] .tbl, [data-look="gallery"] .chpanel{ background:transparent; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="top" aria-label="KritRod">
+    <div class="brand"><i aria-hidden="true"></i>KritRod <span>STUDIO</span></div>
+    <div class="looks" id="looks" role="radiogroup" aria-label="ดีไซน์หน้าเว็บ"><span>ดีไซน์</span></div>
+    <ul><li><a href="#viewer">3D Showroom</a></li><li><a href="#viewer" data-go="blueprint">Blueprint</a></li><li><a href="#viewer" data-go="engine">เครื่องยนต์</a></li><li><a href="#viewer" data-go="chassis">ช่วงล่าง</a></li><li><a href="#specs">รุ่นย่อย</a></li><li><a href="#compare">เทียบสามคัน</a></li></ul>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-head">
+      <h1 id="h1">Civic <em>e:HEV</em></h1>
+      <p class="lede" id="lede"></p>
+    </div>
+    <div class="carbar" id="carbar" role="tablist" aria-label="เลือกรถ"></div>
+
+    <div class="stage" id="viewer">
+      <canvas id="cv" aria-label="โมเดลสามมิติ ลากเพื่อหมุน เลื่อนล้อเมาส์เพื่อซูม"></canvas>
+      <div class="overlay" id="overlay"><svg id="dimsvg"></svg></div>
+      <div class="loading" id="loading" hidden></div>
+      <div class="credit" id="credit" hidden></div>
+      <div class="tip" id="tip" hidden></div>
+      <div class="pop" id="pop" hidden role="dialog" aria-live="polite"><button type="button" class="pop-x" id="popX" aria-label="ปิด">×</button><b id="popT"></b><p id="popD"></p><span class="mat" id="popM" hidden></span></div>
+      <div class="modes" role="tablist" aria-label="โหมดการดู">
+        <button role="tab" id="mShow" class="on" aria-selected="true">Showroom</button>
+        <button role="tab" id="mBlue" aria-selected="false">Blueprint</button>
+        <button role="tab" id="mEng" aria-selected="false">Engine</button>
+        <button role="tab" id="mChas" aria-selected="false">Chassis</button>
+      </div>
+      <div class="tools">
+        <div class="toolbox" id="tShow"></div>
+        <div class="toolbox" id="tBlue" hidden>
+          <button class="tbtn on" data-view="side">SIDE</button>
+          <button class="tbtn" data-view="top">TOP</button>
+          <button class="tbtn" data-view="front">FRONT</button>
+          <button class="tbtn" data-view="iso">ISO</button>
+          <span class="caption">หน่วย มม.</span>
+        </div>
+        <div class="toolbox" id="tEng" hidden>
+          <label for="explode">แยกชิ้น</label>
+          <input type="range" id="explode" min="0" max="1" step="0.01" value="0.55">
+          <span class="caption">คลิกป้ายชื่อเพื่อดูรายละเอียด</span>
+        </div>
+        <div class="toolbox" id="tChas" hidden></div>
+        <span class="caption" id="hint">ลากเพื่อหมุน · ล้อเมาส์เพื่อซูม</span>
+      </div>
+    </div>
+    <div class="info" id="info"></div>
+    <div class="part-card" id="partCard" hidden></div>
+    <div class="chpanel" id="chPanel" hidden>
+      <div class="chtabs" id="chTabs" role="tablist" aria-label="ระบบในหน้า Chassis"></div>
+      <div class="chhead"><b>ระบบใต้ตัวถัง</b><span id="chSummary"></span></div>
+      <p class="chlede" id="chLede"></p>
+      <div class="chlayers" id="chLayers"></div>
+      <div class="chfocus" id="chFocus"></div>
+      <div class="chlegend" id="chLegend"></div>
+    </div>
+  </div>
+
+  <section class="specs" id="specs">
+    <div class="sec-head">
+      <h2 id="specTitle"></h2>
+      <p id="specLede"></p>
+    </div>
+    <div class="variants" id="variants"></div>
+  </section>
+
+  <section class="specs" id="compare">
+    <div class="sec-head">
+      <h2>สามคัน<br>บนสเกลเดียวกัน</h2>
+      <p>เงาด้านข้างวาดจากมิติของแต่ละคันในสเกลเดียวกัน วางชิดท้ายรถบนพื้นเดียวกัน ตารางด้านล่างใช้รุ่นย่อยที่เลือกไว้ของแต่ละคัน กดชื่อรถในหัวตารางเพื่อสลับไปดูคันนั้น</p>
+    </div>
+    <div class="profile"><div class="scroll" id="profile"></div><div class="legend" id="legend"></div></div>
+    <div class="tbl"><table id="table"></table></div>
+  </section>
+
+  <footer>
+    <p>Aventador ใช้สเปกทางการของ Lamborghini (เลิกผลิตแล้ว น้ำหนักเป็นน้ำหนักแห้ง ตำแหน่งชิ้นส่วนใต้ท้องเป็นแบบประมาณ) ส่วน Civic e:HEV และ Corolla Altis ใช้ข้อมูลรุ่นที่ขายในไทยปี 2026 ตัวเลขที่มี <span class="approx">≈</span> ยังไม่ได้ยืนยันกับเอกสารทางการ</p>
+    <p>โมเดล 3 มิติสร้างด้วย three.js ตามสัดส่วนในสเปก ทำขึ้นเพื่อการศึกษา หน้านี้ไม่เกี่ยวข้องกับ Honda หรือ Toyota ชื่อรุ่นและชื่อสีเป็นเครื่องหมายการค้าของเจ้าของ ราคาและสเปกอาจเปลี่ยนแปลง ควรตรวจสอบกับผู้จำหน่ายอีกครั้ง</p>
+    <ul>
+      <li><a href="https://www.honda.co.th/en/civic/specification" target="_blank" rel="noopener">Honda Thailand · Civic specification</a></li>
+      <li><a href="https://www.motorist.co.th/en/article/6147/honda-thailand-officially-launches-the-updated-civic-e-hev-highlighted-an-8-speed-simulated-s-shift-transmission" target="_blank" rel="noopener">Motorist · Civic e:HEV 2026 ราคาและอัตราสิ้นเปลือง</a></li>
+      <li><a href="https://www.toyota.co.th/en/model/altis/specification" target="_blank" rel="noopener">Toyota Thailand · Corolla Altis specification</a></li>
+      <li><a href="https://autolifethailand.tv/official-price-toyota-corolla-altis-my2026/" target="_blank" rel="noopener">Autolife Thailand · Corolla Altis MY2026 ราคาและเครื่องยนต์</a></li>
+      <li><a href="https://www.zigwheels.co.th/en/new-cars/toyota/corolla-altis" target="_blank" rel="noopener">ZigWheels · Corolla Altis มิติตัวถัง</a></li>
+    </ul>
+    <p>โหมด Chassis จัดวางโครงสร้างตัวถัง ช่วงล่าง และระบบใต้ท้องตามหลักวิศวกรรมทั่วไปของรถขับหน้าขนาดนี้ ชนิดช่วงล่างตรงกับรุ่นจริง แต่ตำแหน่งและขนาดชิ้นส่วนเป็นแบบประมาณ ไม่ใช่แบบจากผู้ผลิต</p>
+    <p>โมเดลละเอียดของ Civic และ Altis ใช้ในทุกโหมด (Blueprint วาดเส้นขอบจากโมเดลนี้ ส่วน Engine แสดงตัวถังแบบโปร่ง ชิ้นเครื่องยนต์ยังเป็นโมเดลจำลอง) ใช้ภายใต้สัญญาอนุญาต <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> ย่อขนาดให้ยาวเท่าสเปก และตัดชิ้นส่วนที่ไม่เกี่ยวข้องออก (เฉพาะ Altis)</p>
+    <ul>
+      <li><a href="https://sketchfab.com/3d-models/0dc6454d74a241e5a08fac82ce2826b2" target="_blank" rel="noopener">“2025 Honda Civic RS e:HEV”</a> โดย <a href="https://sketchfab.com/palma123.jaat" target="_blank" rel="noopener">Palma123 JAAT</a></li>
+      <li><a href="https://sketchfab.com/3d-models/lamborghini-aventador-lp720-4-50th-anniversary-7c210c26a24c4b2d883cee882921cf0c" target="_blank" rel="noopener">“Lamborghini Aventador LP720-4 50th Anniversary”</a> โดย <a href="https://sketchfab.com/ddiaz-design" target="_blank" rel="noopener">Ddiaz Design</a> · สัญญาอนุญาต <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> (ห้ามใช้เชิงพาณิชย์) ดัดแปลงโดยบีบอัดพื้นผิวและเปิดให้เปลี่ยนสีตัวถัง</li>
+      <li><a href="https://sketchfab.com/3d-models/006c00b97d174d03bec347adf52d0bbd" target="_blank" rel="noopener">“Toyota Corolla Altis”</a> โดย <a href="https://sketchfab.com/niev" target="_blank" rel="noopener">niev</a></li>
+    </ul>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+(function(){
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = n => Number(n).toLocaleString('en-US');
+  const tireR = (w, a, inch) => (inch*25.4/2 + w*a/100)/1000;
+  const AX = '<span class="approx" title="ยังไม่ได้ยืนยันกับเอกสารทางการ">≈</span>';
+
+  // ---- parts text ---------------------------------------------------------------------------
+  const P = {
+    head:{ k:'head', th:'ฝาสูบ (Cylinder head)', mat:'อะลูมิเนียม · DOHC 16 วาล์ว', text:'มีห้องเผาไหม้ วาล์วไอดี-ไอเสีย และเพลาลูกเบี้ยวคู่ด้านบน' },
+    cover:{ k:'cover', th:'ฝาครอบวาล์ว', text:'ปิดกลไกวาล์วด้านบน ลดเสียงรบกวน และมีช่องระบายไอน้ำมัน (PCV)' },
+    pistons:{ k:'pistons', th:'ลูกสูบและก้านสูบ', text:'รับแรงจากการเผาไหม้แล้วส่งต่อไปยังเพลาข้อเหวี่ยง' },
+    crank:{ k:'crank', th:'เพลาข้อเหวี่ยง', text:'เปลี่ยนการเคลื่อนที่ขึ้นลงของลูกสูบเป็นการหมุน' },
+    intake:{ k:'intake', th:'ท่อร่วมไอดี', text:'กระจายอากาศเข้าทั้ง 4 สูบอย่างสม่ำเสมอ' },
+    exhaust:{ k:'exhaust', th:'ท่อร่วมไอเสีย', text:'รวมไอเสียจากทั้ง 4 สูบส่งต่อไปยังแคตาไลติกคอนเวอร์เตอร์' },
+    pan:{ k:'pan', th:'อ่างน้ำมันเครื่อง', text:'เก็บน้ำมันเครื่องไว้ใต้เพลาข้อเหวี่ยง' }
+  };
+  const KR_PARTS = [
+    { k:'block', th:'เสื้อสูบ (Cylinder block)', mat:'อะลูมิเนียมหล่อ ปลอกสูบเหล็กหล่อ', text:'โครงหลักของเครื่องยนต์ บรรจุกระบอกสูบ 4 สูบเรียง ความจุรวม 1,998 ซีซี กระบอก × ช่วงชัก 86 × 86 มม.' },
+    { k:'head', th:'ฝาสูบ (Cylinder head)', mat:'อะลูมิเนียม · 16 วาล์ว DOHC', text:'มีห้องเผาไหม้ วาล์วไอดี-ไอเสีย และเพลาลูกเบี้ยวคู่ ระบบวาล์วแปรผันทั้งฝั่งไอดีและไอเสีย' },
+    { k:'cover', th:'ฝาครอบวาล์ว', mat:'คอมโพสิตพลาสติก PA66', text:'ปิดกลไกวาล์วด้านบน ลดเสียงรบกวน และมีช่องระบายไอน้ำมัน (PCV)' },
+    { k:'pistons', th:'ลูกสูบและก้านสูบ', mat:'ลูกสูบอะลูมิเนียมหลอม · ก้านสูบเหล็กตีขึ้นรูป', text:'รับแรงระเบิดจากการเผาไหม้แล้วส่งต่อไปยังเพลาข้อเหวี่ยง อัตราส่วนกำลังอัด 9.8:1' },
+    { k:'crank', th:'เพลาข้อเหวี่ยง', mat:'เหล็กกล้าตีขึ้นรูป', text:'เปลี่ยนการเคลื่อนที่ขึ้นลงของลูกสูบเป็นการหมุน ส่งกำลังไปยังเกียร์' },
+    { k:'intake', th:'ท่อร่วมไอดี', mat:'พลาสติก PA6-GF30 ฉีดขึ้นรูป', text:'จ่ายอากาศที่ผ่านเทอร์โบและอินเตอร์คูลเลอร์เข้าทั้ง 4 สูบอย่างสม่ำเสมอ' },
+    { k:'exhaust', th:'ท่อร่วมไอเสีย', mat:'เหล็กกล้าไร้สนิม ทนความร้อน', text:'รวมไอเสียทั้ง 4 สูบส่งไปหมุนกังหันเทอร์โบ' },
+    { k:'turbo', th:'เทอร์โบชาร์จเจอร์', mat:'เสื้อเหล็กหล่อ · ใบพัดนิกเกิลอัลลอย', text:'ใช้พลังงานไอเสียหมุนกังหันเพื่ออัดอากาศเข้าเครื่อง แรงดันสูงสุด 1.6 บาร์ แรงบิดสูงสุดมาตั้งแต่ 1,800 รอบ/นาที' },
+    { k:'pan', th:'อ่างน้ำมันเครื่อง', mat:'เหล็กแผ่นปั๊ม SPCC', text:'เก็บน้ำมันเครื่อง 5.0 ลิตร ใต้เพลาข้อเหวี่ยง' }
+  ];
+  const CIVIC_PARTS = [
+    { k:'block', th:'เสื้อสูบ 2.0 ลิตร', mat:'อะลูมิเนียม', text:'เครื่องยนต์เบนซิน 4 สูบ DOHC 16 วาล์ว 1,993 ซีซี กำลังสูงสุด 141 PS ที่ 6,000 รอบ/นาที แรงบิด 182 Nm ที่ 4,500 รอบ/นาที' },
+    P.head, P.cover, P.pistons, P.crank, P.intake, P.exhaust,
+    { k:'ecvt', th:'E-CVT และมอเตอร์ 2 ตัว', text:'ระบบ e:HEV มีมอเตอร์ปั่นไฟหนึ่งตัวและมอเตอร์ขับล้ออีกหนึ่งตัว มอเตอร์ขับเคลื่อนให้กำลัง 184 PS แรงบิด 315 Nm ตั้งแต่ 0–2,000 รอบ/นาที ส่วนใหญ่รถวิ่งด้วยมอเตอร์ เมื่อวิ่งเร็วคงที่เครื่องยนต์จะต่อกับล้อโดยตรงผ่านคลัตช์' },
+    { k:'pcu', th:'ชุดควบคุมกำลัง (PCU)', text:'แปลงไฟระหว่างแบตเตอรี่ มอเตอร์ปั่นไฟ และมอเตอร์ขับเคลื่อน' },
+    { k:'battery', th:'แบตเตอรี่ไฮบริด', mat:'ลิเธียมไอออน', text:'ชุดแบตเตอรี่ของระบบ e:HEV วางใต้เบาะหลัง ตำแหน่งในโมเดลเป็นแบบคร่าว ๆ' },
+    P.pan
+  ];
+  const ALTIS_HEV_PARTS = [
+    { k:'block', th:'เครื่องยนต์ 2ZR-FXE', text:'เบนซิน 4 สูบ 1,798 ซีซี ทำงานแบบ Atkinson cycle กำลัง 98 PS ที่ 5,200 รอบ/นาที แรงบิด 142 Nm ที่ 3,600 รอบ/นาที' },
+    P.head, P.cover, P.pistons, P.crank, P.intake, P.exhaust,
+    { k:'ecvt', th:'E-CVT แบบเฟืองดาวเคราะห์', text:'รวมกำลังเครื่องยนต์กับมอเตอร์ไฟฟ้าผ่านชุดเฟืองดาวเคราะห์ มอเตอร์ให้กำลัง 72 PS แรงบิด 163 Nm กำลังรวมของระบบ 122 PS' },
+    { k:'pcu', th:'อินเวอร์เตอร์ (PCU)', text:'แปลงไฟกระแสตรงจากแบตเตอรี่เป็นไฟกระแสสลับให้มอเตอร์ และแปลงกลับเพื่อชาร์จตอนเบรก' },
+    { k:'battery', th:'แบตเตอรี่ไฮบริด', text:'วางใต้เบาะหลัง ตำแหน่งในโมเดลเป็นแบบคร่าว ๆ' },
+    P.pan
+  ];
+  const ALTIS_G_PARTS = [
+    { k:'block', th:'เครื่องยนต์ 2ZR-FBE', text:'เบนซิน 4 สูบ 1,798 ซีซี Dual VVT-i กำลัง 140 PS ที่ 6,000 รอบ/นาที แรงบิด 177 Nm ที่ 4,000 รอบ/นาที' },
+    P.head, P.cover, P.pistons, P.crank, P.intake, P.exhaust,
+    { k:'ecvt', th:'เกียร์ Super CVT-i', text:'เกียร์แปรผันต่อเนื่อง มีโหมดจำลองการเปลี่ยนเกียร์ 7 จังหวะ' },
+    P.pan
+  ];
+
+  const LAMBO_PARTS = [
+    { k:'block', th:'เสื้อสูบ V12 6.5 ลิตร (L539)', mat:'อะลูมิเนียม-ซิลิกอน', text:'เครื่อง V12 มุม 60° ความจุ 6,498 ซีซี กระบอก × ช่วงชัก 95 × 76.4 มม. ไม่มีเทอร์โบ หมุนได้เกิน 8,000 รอบ/นาที อัตราส่วนกำลังอัด 11.8:1' },
+    { k:'head', th:'ฝาสูบซ้าย-ขวา', mat:'อะลูมิเนียม · 48 วาล์ว DOHC', text:'ฝาสูบแยกสองฝั่ง ฝั่งละ 6 สูบ แต่ละฝั่งมีเพลาลูกเบี้ยวคู่ รวม 4 เพลา มีระบบวาล์วแปรผัน' },
+    { k:'cover', th:'ฝาครอบวาล์วและคอยล์จุดระเบิด', text:'ปิดกลไกวาล์วทั้งสองฝั่ง คอยล์จุดระเบิดแยกทุกสูบรวม 12 ตัว (จุดสีแดง)' },
+    { k:'pistons', th:'ลูกสูบ 12 สูบ', mat:'อะลูมิเนียมตีขึ้นรูป', text:'ลูกสูบสองแถวเอียงเข้าหากันเป็นรูปตัว V ใช้ข้อเหวี่ยงร่วมกันทีละคู่' },
+    { k:'crank', th:'เพลาข้อเหวี่ยง', mat:'เหล็กกล้าตีขึ้นรูป', text:'ข้อเหวี่ยง 6 ข้อรับลูกสูบ 12 ลูก V12 สมดุลในตัวเองจึงสั่นน้อยมากโดยไม่ต้องมีเพลาถ่วง' },
+    { k:'intake', th:'ท่อร่วมไอดีกลางตัว V', mat:'คอมโพสิต', text:'ห้องพักอากาศสองท่อวางในร่องตัว V จ่ายอากาศเข้าทั้ง 12 สูบ อากาศมาจากช่องดักลมด้านข้างรถ' },
+    { k:'exhaust', th:'ท่อร่วมไอเสีย', mat:'เหล็กกล้าไร้สนิม', text:'ท่อร่วมฝั่งละ 6 สูบ ไอเสียออกทางด้านนอกของตัว V รวมไปที่แคตและปลายท่อกลางท้ายรถ' },
+    { k:'gearbox', th:'เกียร์ ISR 7 สปีด', mat:'อัตโนมัติคลัตช์เดี่ยว', text:'Independent Shifting Rod เปลี่ยนเกียร์ได้ใน 50 มิลลิวินาที วางด้านหน้าเครื่องยนต์ในอุโมงค์กลางรถ ส่งกำลังไปเพลาหน้าผ่านเพลากลางและคลัตช์ Haldex' },
+    { k:'pan', th:'อ่างน้ำมันแบบ dry sump', text:'หล่อลื่นแบบ dry sump มีถังน้ำมันเครื่องแยก อ่างจึงแบนและวางเครื่องได้ต่ำ จุดศูนย์ถ่วงรถต่ำลง' }
+  ];
+
+  // ---- cars ------------------------------------------------------------------------------------
+  const CARS = [
+    { id:'civic', name:'Civic e:HEV', sub:'Honda · สเปกไทย 2026', color:'#6fb4e8', h1:'Civic <em>e:HEV</em>',
+      lede:'ซีดานรุ่นที่ 11 เวอร์ชันไทยปี 2026 ขายเฉพาะขุมพลังไฮบริด 2.0 ลิตร สัดส่วนโมเดลตั้งจากมิติตามสเปกของ Honda ประเทศไทย',
+      specTitle:'รุ่นย่อย<br>ที่ขายในไทย', specLede:'ทุกรุ่นใช้เครื่อง 2.0 ลิตรกับมอเตอร์ชุดเดียวกัน ต่างกันที่อุปกรณ์ ล้อ และน้ำหนัก กดการ์ดเพื่อเปลี่ยนล้อและความกว้างล้อบนโมเดล',
+      dims:{ L:4681, W:1802, H:1415, WB:2734, GC:128 }, approx:{},
+      axleR:0.98, archC:0.323, rearSusp:'ml', fuelL:40, rearStab:()=>true, pf:7, pr:6, ghW:0.86, ghT:0.76, rgTop:1.40, wsTop:2.72, bPillar:2.20, doorLines:[3.30, 2.22, 1.40], handles:[2.40, 1.56], engScale:0.9, fuel:'23.3 กม./ลิตร',
+      top:[[0,0.42],[0.02,0.64],[0.06,0.86],[0.16,0.95],[0.35,0.985],[0.55,0.995],[1.5,1.0],[3.0,1.005],[3.3,0.995],[3.8,0.95],[4.25,0.87],[4.52,0.79],[4.64,0.70],[4.681,0.55]],
+      bot:[[0,0.42],[0.03,0.34],[0.15,0.28],[0.5,0.20],[4.0,0.19],[4.45,0.24],[4.62,0.32],[4.681,0.55]],
+      roof:[[0.55,0.99],[0.85,1.12],[1.2,1.28],[1.6,1.38],[2.05,1.415],[2.5,1.405],[2.8,1.36],[3.05,1.22],[3.32,1.0]],
+      lights:[
+        { f:1, z0:-0.52, z1:0.52, yl:[0.36,0.36], yh:[0.57,0.57], m:'grille' },
+        { f:1, z0:-0.42, z1:0.42, yl:[0.676,0.676], yh:[0.712,0.712], m:'trim' },
+        { f:1, z0:0.42, z1:0.81, yl:[0.672,0.690], yh:[0.724,0.738], m:'head', mirror:1 },
+        { f:1, z0:0.60, z1:0.79, yl:[0.34,0.36], yh:[0.44,0.46], m:'grille', mirror:1 },
+        { f:1, z0:-0.64, z1:0.64, yl:[0.25,0.25], yh:[0.29,0.29], m:'trim' },
+        { f:1, z0:-0.17, z1:0.17, yl:[0.40,0.40], yh:[0.53,0.53], m:'plate', pad:0.011 },
+        { f:0, z0:0.30, z1:0.87, yl:[0.845,0.83], yh:[0.905,0.90], m:'tail', mirror:1 },
+        { f:0, z0:-0.17, z1:0.17, yl:[0.53,0.53], yh:[0.66,0.66], m:'plate' },
+        { f:0, z0:-0.62, z1:0.62, yl:[0.30,0.30], yh:[0.37,0.37], m:'trim' }
+      ],
+      beltTrim:'trim', sillTrim:true,
+      paints:[['#9e1b24','Ignite Red Metallic'],['#e8e6e0','Platinum White Pearl'],['#4a4e54','Meteoroid Gray Metallic'],['#141518','Crystal Black Pearl']],
+      trims:[
+        { id:'EL', name:'e:HEV EL', tag:'รุ่นเริ่มต้น', color:'#6fb4e8', desc:'รุ่นเริ่มต้นของ Civic e:HEV ขุมพลังเดียวกับรุ่นท็อป ล้ออัลลอย 17 นิ้ว', kind:'hybrid', parts:CIVIC_PARTS,
+          powerLabel:'มอเตอร์ขับเคลื่อน', power:184, weight:1404, tire:'215/50 R17', tw:0.215, R:tireR(215,50,17), rimR:17*0.0127, spokes:5, twin:true, rimCol:'#9da2a8', face:'#2a2c30', track:[1547,1586],
+          engineTxt:'2.0 ลิตร 141 PS · 182 Nm', gearTxt:'E-CVT', powerTxt:'184 PS · 315 Nm (มอเตอร์)', price:949000,
+          rows:[['ราคา','949,000 บาท'],['น้ำหนักรถเปล่า','1,404 กก.'],['ยาง','215/50 R17'],['ล้อหน้า/หลัง (track)','1,547 / 1,586'],['มอเตอร์ขับเคลื่อน','184 PS · 315 Nm'],['เครื่องยนต์','141 PS · 182 Nm'],['ถังน้ำมัน','40 ลิตร']] },
+        { id:'ELp', name:'e:HEV EL+', tag:'รุ่นกลาง', color:'#8fc6ee', desc:'รุ่นกลาง ขุมพลังและยางเท่ากับ EL เพิ่มอุปกรณ์ภายในและความปลอดภัย', kind:'hybrid', parts:CIVIC_PARTS,
+          powerLabel:'มอเตอร์ขับเคลื่อน', power:184, weight:1412, tire:'215/50 R17', tw:0.215, R:tireR(215,50,17), rimR:17*0.0127, spokes:5, twin:true, rimCol:'#c3c7cc', face:'#1d1f22', track:[1547,1586],
+          engineTxt:'2.0 ลิตร 141 PS · 182 Nm', gearTxt:'E-CVT', powerTxt:'184 PS · 315 Nm (มอเตอร์)', price:1109000,
+          rows:[['ราคา','1,109,000 บาท'],['น้ำหนักรถเปล่า','1,412 กก.'],['ยาง','215/50 R17'],['ล้อหน้า/หลัง (track)','1,547 / 1,586'],['มอเตอร์ขับเคลื่อน','184 PS · 315 Nm'],['เครื่องยนต์','141 PS · 182 Nm'],['ถังน้ำมัน','40 ลิตร']] },
+        { id:'RS', name:'e:HEV RS', tag:'รุ่นท็อป', color:'#c8323a', desc:'ล้อ 18 นิ้วสีดำ มีระบบ S+ Shift จำลองการเปลี่ยนเกียร์ 8 จังหวะ ความกว้างล้อแคบลง 10 มม.', kind:'hybrid', parts:CIVIC_PARTS,
+          powerLabel:'มอเตอร์ขับเคลื่อน', power:184, weight:1429, tire:'235/40 ZR18', tw:0.235, R:tireR(235,40,18), rimR:18*0.0127, spokes:10, twin:false, rimCol:'#1f2023', face:'#141517', track:[1537,1576],
+          engineTxt:'2.0 ลิตร 141 PS · 182 Nm', gearTxt:'E-CVT + S+ Shift', powerTxt:'184 PS · 315 Nm (มอเตอร์)', price:1259000,
+          rows:[['ราคา','1,259,000 บาท'],['น้ำหนักรถเปล่า','1,429 กก.'],['ยาง','235/40 ZR18'],['ล้อหน้า/หลัง (track)','1,537 / 1,576'],['มอเตอร์ขับเคลื่อน','184 PS · 315 Nm'],['เครื่องยนต์','141 PS · 182 Nm'],['ถังน้ำมัน','40 ลิตร']] }
+      ]
+    },
+    { id:'altis', name:'Corolla Altis', sub:'Toyota · สเปกไทย 2026', color:'#d9b25f', h1:'Corolla <em>Altis</em>',
+      lede:'ซีดานรุ่นที่ 12 (E210) เวอร์ชันไทยปี 2026 มีทั้งเบนซิน 1.8 ลิตรและไฮบริด 1.8 ลิตร สัดส่วนโมเดลตั้งจากมิติที่เผยแพร่',
+      specTitle:'รุ่นย่อย<br>ที่ขายในไทย', specLede:'รุ่น 1.8G ใช้เครื่องเบนซินล้วน อีกสามรุ่นเป็นไฮบริด กดการ์ดเพื่อเปลี่ยนล้อ และดูเครื่องยนต์ของรุ่นนั้นในโหมด Engine',
+      dims:{ L:4630, W:1780, H:1455, WB:2700, GC:149 }, approx:{ WB:true },
+      axleR:1.00, archC:0.317, rearSusp:'dw', fuelL:43, rearStab:t=>t.id==='GR', pf:6, pr:5, ghW:0.86, ghT:0.78, rgTop:1.52, wsTop:2.74, bPillar:2.16, doorLines:[3.28, 2.18, 1.42], handles:[2.36, 1.58], engScale:0.86, fuel:null,
+      top:[[0,0.45],[0.02,0.70],[0.07,0.93],[0.2,1.02],[0.45,1.045],[0.75,1.05],[3.0,1.055],[3.25,1.04],[3.7,0.99],[4.15,0.91],[4.45,0.83],[4.58,0.76],[4.63,0.60]],
+      bot:[[0,0.45],[0.03,0.36],[0.15,0.30],[0.5,0.22],[4.0,0.21],[4.45,0.26],[4.60,0.34],[4.63,0.60]],
+      roof:[[0.72,1.045],[0.95,1.16],[1.25,1.33],[1.6,1.42],[2.0,1.455],[2.4,1.45],[2.7,1.40],[2.95,1.26],[3.25,1.04]],
+      lights:[
+        { f:1, z0:-0.56, z1:0.56, yl:[0.30,0.30], yh:[0.58,0.58], m:'grille' },
+        { f:1, z0:-0.40, z1:0.40, yl:[0.66,0.66], yh:[0.705,0.705], m:'trim' },
+        { f:1, z0:-0.40, z1:0.40, yl:[0.705,0.705], yh:[0.725,0.725], m:'chrome', pad:0.008 },
+        { f:1, z0:0.40, z1:0.83, yl:[0.655,0.69], yh:[0.745,0.755], m:'head', mirror:1 },
+        { f:1, z0:0.62, z1:0.80, yl:[0.34,0.36], yh:[0.44,0.47], m:'grille', mirror:1 },
+        { f:1, z0:-0.17, z1:0.17, yl:[0.37,0.37], yh:[0.50,0.50], m:'plate', pad:0.011 },
+        { f:0, z0:0.36, z1:0.87, yl:[0.82,0.81], yh:[0.93,0.92], m:'tail', mirror:1 },
+        { f:0, z0:-0.36, z1:0.36, yl:[0.865,0.865], yh:[0.885,0.885], m:'chrome' },
+        { f:0, z0:-0.17, z1:0.17, yl:[0.53,0.53], yh:[0.66,0.66], m:'plate' },
+        { f:0, z0:-0.60, z1:0.60, yl:[0.32,0.32], yh:[0.38,0.38], m:'trim' }
+      ],
+      beltTrim:'chrome', sillTrim:false,
+      paints:[['#e9e7e1','Platinum White Pearl'],['#131416','Attitude Black Mica'],['#6f757b','Celestite Gray Metallic'],['#b5b8bc','Silver Metallic']],
+      trims:[
+        { id:'G', name:'1.8G', tag:'เบนซิน', color:'#b5b8bc', desc:'เครื่องเบนซิน 1.8 ลิตร 2ZR-FBE เกียร์ Super CVT-i ล้อ 16 นิ้ว', kind:'na', parts:ALTIS_G_PARTS,
+          powerLabel:'กำลังสูงสุด', power:140, weight:null, tire:'205/55 R16', tw:0.205, R:tireR(205,55,16), rimR:16*0.0127, spokes:5, twin:false, rimCol:'#b8bcc2', face:'#2a2c30', track:null,
+          engineTxt:'2ZR-FBE 1.8 ลิตร 140 PS · 177 Nm', gearTxt:'Super CVT-i (จำลอง 7 จังหวะ)', powerTxt:'140 PS · 177 Nm', price:909000,
+          rows:[['ราคา','909,000 บาท'],['เครื่องยนต์','2ZR-FBE 1,798 ซีซี'],['กำลังสูงสุด','140 PS @6,000'],['แรงบิด','177 Nm @4,000'],['เกียร์','Super CVT-i'],['ยาง','205/55 R16'],['ถังน้ำมัน','43 ลิตร']] },
+        { id:'HS', name:'HEV Smart', tag:'ไฮบริด', color:'#d9b25f', desc:'ไฮบริด 1.8 ลิตร กำลังรวม 122 PS เกียร์ E-CVT ล้อ 17 นิ้ว', kind:'hybrid', parts:ALTIS_HEV_PARTS,
+          powerLabel:'กำลังรวมของระบบ', power:122, weight:null, tire:'225/45 R17', tw:0.225, R:tireR(225,45,17), rimR:17*0.0127, spokes:5, twin:true, rimCol:'#c3c7cc', face:'#232528', track:null,
+          engineTxt:'2ZR-FXE 1.8 ลิตร 98 PS · 142 Nm', gearTxt:'E-CVT', powerTxt:'122 PS (รวม)', price:949000,
+          rows:[['ราคา','949,000 บาท'],['เครื่องยนต์','98 PS · 142 Nm'],['มอเตอร์','72 PS · 163 Nm'],['กำลังรวม','122 PS'],['เกียร์','E-CVT'],['ยาง','225/45 R17'],['ถังน้ำมัน','43 ลิตร']] },
+        { id:'HP', name:'HEV Premium', tag:'ไฮบริด', color:'#e6c98a', desc:'ขุมพลังเดียวกับ HEV Smart เพิ่มอุปกรณ์ภายในและความปลอดภัย', kind:'hybrid', parts:ALTIS_HEV_PARTS,
+          powerLabel:'กำลังรวมของระบบ', power:122, weight:null, tire:'225/45 R17', tw:0.225, R:tireR(225,45,17), rimR:17*0.0127, spokes:5, twin:true, rimCol:'#d4d7db', face:'#1b1c1f', track:null,
+          engineTxt:'2ZR-FXE 1.8 ลิตร 98 PS · 142 Nm', gearTxt:'E-CVT', powerTxt:'122 PS (รวม)', price:1009000,
+          rows:[['ราคา','1,009,000 บาท'],['เครื่องยนต์','98 PS · 142 Nm'],['มอเตอร์','72 PS · 163 Nm'],['กำลังรวม','122 PS'],['เกียร์','E-CVT'],['ยาง','225/45 R17'],['ถังน้ำมัน','43 ลิตร']] },
+        { id:'GR', name:'HEV GR Sport', tag:'ไฮบริด · สปอร์ต', color:'#c8323a', desc:'ล้อ 17 นิ้วลาย GR ปรับโช้คอัพและสปริงใหม่ เพิ่มเหล็กกันโคลงหลัง', kind:'hybrid', parts:ALTIS_HEV_PARTS,
+          powerLabel:'กำลังรวมของระบบ', power:122, weight:null, tire:'225/45 R17', tw:0.225, R:tireR(225,45,17), rimR:17*0.0127, spokes:10, twin:false, rimCol:'#1f2023', face:'#141517', track:null,
+          engineTxt:'2ZR-FXE 1.8 ลิตร 98 PS · 142 Nm', gearTxt:'E-CVT', powerTxt:'122 PS (รวม)', price:1129000,
+          rows:[['ราคา','1,129,000 บาท'],['เครื่องยนต์','98 PS · 142 Nm'],['มอเตอร์','72 PS · 163 Nm'],['กำลังรวม','122 PS'],['ช่วงล่าง','ปรับเฉพาะ GR'],['ยาง','17 นิ้ว ลาย GR'],['ถังน้ำมัน','43 ลิตร']] }
+      ]
+    },
+    { id:'lambo', name:'Aventador', sub:'Lamborghini · LP720-4 50°', color:'#e8b400', h1:'Aventador <em>LP720-4</em>',
+      lede:'ซูเปอร์คาร์ V12 เครื่องวางกลางลำ ขับสี่ล้อ รุ่นฉลองครบรอบ 50 ปีของ Lamborghini (2013) คูเป้ผลิตเพียง 100 คัน ตัวถังคาร์บอนโมโนค็อก ประตูเปิดขึ้นแบบกรรไกร เลิกผลิตแล้วจึงไม่มีราคาขายใหม่ในไทย',
+      specTitle:'สามรุ่น<br>ของ Aventador', specLede:'ทุกรุ่นใช้ V12 6.5 ลิตรไร้เทอร์โบกับเกียร์ ISR 7 สปีด ขับสี่ล้อ ต่างกันที่กำลัง น้ำหนัก และล้อ กดการ์ดเพื่อเลือกรุ่นที่จะแสดงบนโมเดล',
+      dims:{ L:4780, W:2030, H:1136, WB:2700, GC:125 }, approx:{},
+      axleR:0.955, archC:0.35, rearSusp:'dw', frontSusp:'ดับเบิลวิชโบนแบบพุชร็อด', fuelL:90, rearStab:()=>true, rearEngine:true, mid:0.42, v12:true, awd:true, sideRad:true,
+      pf:5, pr:7, hip:0.07, hipF:0.03, waist:0.03, ghW:0.74, ghT:0.66, rgTop:1.75, wsTop:2.85, bPillar:null, doorLines:[3.25, 1.95], handles:[], engScale:1.0, fuel:'5.8 กม./ลิตร',
+      top:[[0,0.50],[0.05,0.80],[0.12,0.94],[0.35,0.92],[0.7,0.93],[1.2,0.96],[1.55,0.98],[2.0,0.88],[2.8,0.88],[3.3,0.88],[3.45,0.86],[3.8,0.79],[4.1,0.70],[4.4,0.60],[4.6,0.53],[4.72,0.45],[4.78,0.34]],
+      bot:[[0,0.50],[0.03,0.30],[0.15,0.18],[0.5,0.13],[4.2,0.11],[4.5,0.12],[4.7,0.16],[4.78,0.34]],
+      roof:[[1.55,0.98],[1.75,1.08],[2.0,1.11],[2.3,1.125],[2.6,1.11],[2.85,1.07],[3.1,0.99],[3.3,0.91],[3.45,0.86]],
+      lights:[
+        { f:1, z0:-0.55, z1:0.55, yl:[0.12,0.12], yh:[0.30,0.30], m:'grille' },
+        { f:1, z0:0.45, z1:0.82, yl:[0.50,0.52], yh:[0.60,0.64], m:'head', mirror:1 },
+        { f:0, z0:0.35, z1:0.85, yl:[0.70,0.70], yh:[0.80,0.80], m:'tail', mirror:1 },
+        { f:0, z0:-0.60, z1:0.60, yl:[0.14,0.14], yh:[0.40,0.40], m:'grille' }
+      ],
+      beltTrim:'trim', sillTrim:false,
+      paints:[['#e8b400','Giallo Maggio'],['#ecebe6','Bianco Isis'],['#b3171d','Rosso Mars'],['#e5621c','Arancio Argos'],['#6fc72c','Verde Mantis'],['#1a1b1d','Nero Nemesis']],
+      trims:[
+        { id:'700', name:'LP700-4', tag:'รุ่นแรก 2011', color:'#b5b8bc', desc:'Aventador รุ่นแรก V12 6.5 ลิตร 700 PS เกียร์ ISR 7 สปีด ขับสี่ล้อ ล้อหน้า 19 หลัง 20 นิ้ว', kind:'na', parts:LAMBO_PARTS,
+          powerLabel:'กำลังสูงสุด', power:700, acc:2.9, weight:1575, tire:'255/35 ZR19 · 335/30 ZR20', tw:0.335, R:tireR(335,30,20), rimR:20*0.0127, spokes:10, twin:false, rimCol:'#9da2a8', face:'#1d1f22', track:[1720,1700],
+          engineTxt:'V12 6.5 ลิตร ไร้เทอร์โบ (L539)', gearTxt:'ISR 7 สปีด · ขับสี่ล้อ', powerTxt:'700 PS · 690 Nm', price:null,
+          rows:[['กำลังสูงสุด','700 PS @8,250'],['แรงบิด','690 Nm @5,500'],['0–100 กม./ชม.','2.9 s'],['ความเร็วสูงสุด','350 กม./ชม.'],['น้ำหนักแห้ง','1,575 กก.'],['ยาง หน้า/หลัง','255/35 R19 · 335/30 R20'],['ถังน้ำมัน','90 ลิตร']] },
+        { id:'720', name:'LP720-4 50°', tag:'50° Anniversario', color:'#e8b400', desc:'รุ่นฉลอง 50 ปี (2013) กำลังเพิ่มเป็น 720 PS กันชนหน้าและดิฟฟิวเซอร์หลังออกแบบใหม่ สีเปิดตัว Giallo Maggio', kind:'na', parts:LAMBO_PARTS,
+          powerLabel:'กำลังสูงสุด', power:720, acc:2.9, weight:1575, tire:'255/35 ZR19 · 335/30 ZR20', tw:0.335, R:tireR(335,30,20), rimR:20*0.0127, spokes:5, twin:true, rimCol:'#1f2023', face:'#141517', track:[1720,1700],
+          engineTxt:'V12 6.5 ลิตร ไร้เทอร์โบ (L539)', gearTxt:'ISR 7 สปีด · ขับสี่ล้อ', powerTxt:'720 PS · 690 Nm', price:null,
+          rows:[['กำลังสูงสุด','720 PS @8,250'],['แรงบิด','690 Nm @5,500'],['0–100 กม./ชม.','2.9 s'],['ความเร็วสูงสุด','350 กม./ชม.'],['น้ำหนักแห้ง','1,575 กก.'],['จำนวนผลิต','100 คัน (คูเป้)'],['ถังน้ำมัน','90 ลิตร']] },
+        { id:'SV', name:'LP750-4 SV', tag:'Superveloce', color:'#c8323a', desc:'รุ่น Superveloce (2015) 750 PS เบากว่าเดิม 50 กก. ปีกหลังคาร์บอนปรับได้ ล้อหน้า 20 หลัง 21 นิ้ว', kind:'na', parts:LAMBO_PARTS,
+          powerLabel:'กำลังสูงสุด', power:750, acc:2.8, weight:1525, tire:'255/30 ZR20 · 355/25 ZR21', tw:0.355, R:tireR(355,25,21), rimR:21*0.0127, spokes:10, twin:false, rimCol:'#2a2c30', face:'#141517', track:[1720,1700],
+          engineTxt:'V12 6.5 ลิตร ไร้เทอร์โบ (L539)', gearTxt:'ISR 7 สปีด · ขับสี่ล้อ', powerTxt:'750 PS · 690 Nm', price:null,
+          rows:[['กำลังสูงสุด','750 PS @8,400'],['แรงบิด','690 Nm @5,500'],['0–100 กม./ชม.','2.8 s'],['ความเร็วสูงสุด','> 350 กม./ชม.'],['น้ำหนักแห้ง','1,525 กก.'],['ยาง หน้า/หลัง','255/30 R20 · 355/25 R21'],['ถังน้ำมัน','90 ลิตร']] }
+      ]
+    }
+  ];
+  const state = { car:CARS[0], trim:{ kr1:0, civic:2, altis:1, lambo:1 }, paint:{ kr1:0, civic:0, altis:0, lambo:0 } };
+  const curTrim = (c) => { c = c||state.car; return c.trims[state.trim[c.id]]; };
+
+  // ---- shape maths (no three.js needed) ----------------------------------------------------------
+  function crSample(pts, n){
+    const out = [];
+    const f = (a,b,c,d,t) => { const t2=t*t, t3=t2*t; return 0.5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3); };
+    for (let i=0;i<pts.length-1;i++){
+      const p0=pts[Math.max(0,i-1)], p1=pts[i], p2=pts[i+1], p3=pts[Math.min(pts.length-1,i+2)];
+      for (let k=0;k<n;k++){ const t=k/n; out.push([f(p0[0],p1[0],p2[0],p3[0],t), f(p0[1],p1[1],p2[1],p3[1],t)]); }
+    }
+    out.push(pts[pts.length-1].slice());
+    for (let i=1;i<out.length;i++) if (out[i][0] < out[i-1][0]) out[i][0] = out[i-1][0];
+    return out;
+  }
+  function lineFn(pts){
+    const s = crSample(pts, 24);
+    return x => {
+      if (x <= s[0][0]) return s[0][1];
+      if (x >= s[s.length-1][0]) return s[s.length-1][1];
+      let lo=0, hi=s.length-1;
+      while (hi-lo>1){ const m=(lo+hi)>>1; if (s[m][0] <= x) lo=m; else hi=m; }
+      const a=s[lo], b=s[hi], t = b[0]>a[0] ? (x-a[0])/(b[0]-a[0]) : 0;
+      return a[1] + (b[1]-a[1])*t;
+    };
+  }
+  const sgn = v => v<0?-1:1;
+  function makeShape(def){
+    const L=def.dims.L/1000, W=def.dims.W/1000, WB=def.dims.WB/1000;
+    const top=lineFn(def.top), bot0=lineFn(def.bot), roofF=lineFn(def.roof);
+    const axles=[def.axleR, def.axleR+WB], Rc=def.archC, Ra=def.archC+0.075;
+    const g0=def.roof[0][0], g1=def.roof[def.roof.length-1][0];
+    const N=6, NG=8;
+    function bot(x){ let y=bot0(x); axles.forEach(cx=>{ const d=x-cx; if (Math.abs(d)<Ra) y=Math.max(y, Rc+Math.sqrt(Ra*Ra-d*d)); }); return Math.min(y, top(x)-0.02); }
+    const hip = def.hip||0, hipF = def.hipF||0, waist = def.waist||0, gss = (x,c,w)=>Math.exp(-Math.pow((x-c)/w,2));
+    function wPlan(x){
+      const u=(x-L/2)/(L/2), p=u>0?def.pf:def.pr, a=Math.min(1,Math.abs(u)), base=Math.pow(Math.max(0,1-Math.pow(a,p)),1/p);
+      const shape = 1 + hip*gss(x,axles[0],0.55) + hipF*gss(x,axles[1],0.5) - waist*gss(x,(axles[0]+axles[1])/2,0.6);
+      return W/2/(1+hip)*base*shape;
+    }
+    function roof(x){ return (x>=g0 && x<=g1) ? roofF(x) : null; }
+    function bodyPt(x, th, pad){
+      const w=wPlan(x), yt=top(x), yb=bot(x), mid=(yt+yb)/2, hh=(yt-yb)/2, c=Math.cos(th), s=Math.sin(th);
+      const Yn=sgn(s)*Math.pow(Math.abs(s),2/N), tuck=1-0.06*Math.pow(Math.max(0,-Yn),2);
+      const X=w*sgn(c)*Math.pow(Math.abs(c),2/N)*tuck;
+      return [x, mid+hh*Yn+(pad||0)*s, X+(pad||0)*c];
+    }
+    function hw(x,y){
+      if (x<=0 || x>=L) return 0;
+      const yt=top(x), yb=bot(x); if (y>yt || y<yb) return 0;
+      const mid=(yt+yb)/2, hh=Math.max(1e-6,(yt-yb)/2), Yn=(y-mid)/hh;
+      return wPlan(x)*Math.pow(Math.max(0,1-Math.pow(Math.abs(Yn),N)),1/N)*(1-0.06*Math.pow(Math.max(0,-Yn),2));
+    }
+    function ghBox(x){ const yb=top(x)-0.05, yt=Math.max(roofF(x), top(x)+0.001); const gb=wPlan(x)*def.ghW; return {yb, yt, gb, gt:gb*def.ghT}; }
+    function ghPt(x, th, pad){
+      const b=ghBox(x), mid=(b.yt+b.yb)/2, hh=(b.yt-b.yb)/2, c=Math.cos(th), s=Math.sin(th);
+      const Yn=sgn(s)*Math.pow(Math.abs(s),2/NG), base=b.gb+(b.gt-b.gb)*(Yn+1)/2;
+      return [x, mid+hh*Yn+(pad||0)*s, base*sgn(c)*Math.pow(Math.abs(c),2/NG)+(pad||0)*c];
+    }
+    function ghw(x,y){
+      if (x<g0 || x>g1) return 0;
+      const b=ghBox(x); if (y>b.yt || y<b.yb) return 0;
+      const mid=(b.yt+b.yb)/2, hh=Math.max(1e-6,(b.yt-b.yb)/2), Yn=(y-mid)/hh, base=b.gb+(b.gt-b.gb)*(Yn+1)/2;
+      return base*Math.pow(Math.max(0,1-Math.pow(Math.abs(Yn),NG)),1/NG);
+    }
+    return { L, W, WB, off:-L/2, axles, Rc, Ra, g0, g1, top, bot, roof, wPlan, bodyPt, hw, ghPt, ghw };
+  }
+  const SHAPES = {}; CARS.forEach(c=>SHAPES[c.id]=makeShape(c));
+
+  // ---- text sections ----------------------------------------------------------------------------
+  function renderHead(){
+    const c=state.car;
+    $('h1').innerHTML = c.h1; $('lede').textContent = c.lede;
+    $('carbar').innerHTML = CARS.map(x=>'<button role="tab" data-car="'+x.id+'" class="'+(x===c?'on':'')+'" aria-selected="'+(x===c)+'" style="--cc:'+x.color+'"><b>'+x.name+'</b><span>'+x.sub+'</span></button>').join('');
+    $('carbar').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setCar(b.dataset.car)));
+  }
+  function renderInfo(){
+    const c=state.car, t=curTrim(), d=c.dims;
+    const last = (t.price==null && t.acc)
+      ? '<div><span>0–100 กม./ชม.</span><b>'+t.acc.toFixed(1)+'<small>วินาที</small></b></div>'
+      : '<div><span>'+t.name+' · ราคา</span><b>'+fmt(t.price)+'<small>บาท</small></b></div>';
+    $('info').innerHTML =
+      '<div><span>ยาว × กว้าง × สูง</span><b>'+fmt(d.L)+' × '+fmt(d.W)+' × '+fmt(d.H)+'<small>มม.</small></b></div>'+
+      '<div><span>ระยะฐานล้อ</span><b>'+(c.approx.WB?AX:'')+fmt(d.WB)+'<small>มม.</small></b></div>'+
+      '<div><span>'+t.name+' · '+t.powerLabel+'</span><b>'+t.power+'<small>PS</small></b></div>'+ last;
+  }
+  function renderVariants(){
+    const c=state.car, cur=curTrim();
+    $('specTitle').innerHTML = c.specTitle; $('specLede').textContent = c.specLede;
+    $('variants').innerHTML = c.trims.map((v,i)=>
+      '<button class="variant'+(v===cur?' on':'')+'" data-i="'+i+'" style="--vc:'+v.color+'" aria-pressed="'+(v===cur)+'">'+
+      '<div class="code">'+v.name+'<small>'+v.tag+'</small></div><p>'+v.desc+'</p>'+
+      '<dl>'+v.rows.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('')+(v.weight===null?'<dt>น้ำหนักรถเปล่า</dt><dd class="na">ไม่มีข้อมูล</dd>':'')+'</dl></button>').join('');
+    $('variants').querySelectorAll('.variant').forEach(b=>b.addEventListener('click',()=>setTrim(+b.dataset.i)));
+  }
+  function renderProfile(){
+    const S=100, pad=36, Wd=4.9*S+pad*2, base=1.62*S+18, Hh=base+46;
+    const X = x => (pad + x*S).toFixed(1), Y = y => (base - y*S).toFixed(1);
+    let s = '<svg viewBox="0 0 '+Wd+' '+Hh+'" role="img" aria-label="เงาด้านข้างของ Civic e:HEV, Corolla Altis และ Aventador ในสเกลเดียวกัน">';
+    for (let m=0;m<=4.5;m+=0.5){
+      const major = m%1===0;
+      s += '<line x1="'+X(m)+'" x2="'+X(m)+'" y1="'+(base)+'" y2="'+(base+(major?8:4))+'" style="stroke:var(--faint)"/>';
+      if (major) s += '<text x="'+X(m)+'" y="'+(base+22)+'" text-anchor="middle" font-size="11" style="fill:var(--muted)" font-family="JetBrains Mono, monospace">'+m+' ม.</text>';
+    }
+    [0.5,1.0,1.5].forEach(h=>{ s += '<line x1="'+pad+'" x2="'+(Wd-pad)+'" y1="'+Y(h)+'" y2="'+Y(h)+'" style="stroke:var(--line)" stroke-dasharray="3 5"/><text x="'+(Wd-pad+4)+'" y="'+(+Y(h)+4)+'" font-size="10" style="fill:var(--faint)" font-family="JetBrains Mono, monospace">'+h.toFixed(1)+'</text>'; });
+    s += '<line x1="'+(pad-10)+'" x2="'+(Wd-pad)+'" y1="'+base+'" y2="'+base+'" style="stroke:var(--faint)"/>';
+    const order = CARS.filter(c=>c!==state.car).concat([state.car]);
+    order.forEach(c=>{
+      const sh=SHAPES[c.id], on=c===state.car, up=[], dn=[];
+      for (let x=0; x<=sh.L+1e-6; x+=0.01){ const r=sh.roof(x); up.push(X(x)+','+Y(Math.max(sh.top(x), r===null?0:r))); dn.push(X(x)+','+Y(sh.bot(x))); }
+      s += '<polygon points="'+up.concat(dn.reverse()).join(' ')+'" fill="'+c.color+'" fill-opacity="'+(on?0.16:0.03)+'" stroke="'+c.color+'" stroke-width="'+(on?2:1.1)+'" stroke-opacity="'+(on?1:0.6)+'" stroke-linejoin="round"/>';
+      const t=curTrim(c);
+      sh.axles.forEach(ax=>{ s += '<circle cx="'+X(ax)+'" cy="'+Y(t.R)+'" r="'+(t.R*S).toFixed(1)+'" fill="none" stroke="'+c.color+'" stroke-width="'+(on?1.6:1)+'" stroke-opacity="'+(on?1:0.55)+'"/>'; });
+    });
+    s += '</svg>';
+    $('profile').innerHTML = s;
+    $('legend').innerHTML = CARS.map(c=>'<span><i style="background:'+c.color+'"></i>'+c.name+' · '+fmt(c.dims.L)+' × '+fmt(c.dims.H)+' มม. · ฐานล้อ '+(c.approx.WB?'≈':'')+fmt(c.dims.WB)+'</span>').join('');
+  }
+  function renderTable(){
+    const na = '<span class="na">ไม่มีข้อมูล</span>';
+    const rows = [
+      ['ยาว × กว้าง × สูง (มม.)', c=>fmt(c.dims.L)+' × '+fmt(c.dims.W)+' × '+fmt(c.dims.H)],
+      ['ระยะฐานล้อ (มม.)', c=>(c.approx.WB?AX:'')+fmt(c.dims.WB)],
+      ['ระยะต่ำสุดจากพื้น (มม.)', c=>fmt(c.dims.GC)],
+      ['รุ่นย่อยที่เลือก', c=>curTrim(c).name],
+      ['เครื่องยนต์', c=>curTrim(c).engineTxt],
+      ['ระบบส่งกำลัง', c=>curTrim(c).gearTxt],
+      ['กำลังที่ใช้ขับล้อ', c=>curTrim(c).powerTxt],
+      ['น้ำหนักรถเปล่า (กก.)', c=>curTrim(c).weight ? fmt(curTrim(c).weight) : na],
+      ['ยาง', c=>curTrim(c).tire],
+      ['อัตราสิ้นเปลือง', c=>(c.id==='kr1') ? curTrim(c).rows[5][1] : (c.fuel || na)],
+      ['ราคา (บาท)', c=>curTrim(c).price ? fmt(curTrim(c).price) : '<span class="na">ไม่มีขาย</span>']
+    ];
+    let t = '<thead><tr><th>สเปก</th>'+CARS.map(c=>'<th class="'+(c===state.car?'sel':'')+'"><a href="#viewer" data-car="'+c.id+'" style="color:'+c.color+';text-decoration:none">'+c.name+'</a><small>'+c.sub+'</small></th>').join('')+'</tr></thead><tbody>';
+    rows.forEach(([lab,fn])=>{ t += '<tr><td>'+lab+'</td>'+CARS.map(c=>'<td class="'+(c===state.car?'sel':'')+'">'+fn(c)+'</td>').join('')+'</tr>'; });
+    $('table').innerHTML = t+'</tbody>';
+    $('table').querySelectorAll('[data-car]').forEach(a=>a.addEventListener('click',()=>setCar(a.dataset.car)));
+  }
+  function renderPaints(){
+    const c=state.car, pi=state.paint[c.id];
+    $('tShow').innerHTML = '<span>สี</span>'+c.paints.map((p,i)=>'<button class="swatch'+(i===pi?' on':'')+'" data-p="'+i+'" style="background:'+p[0]+'" aria-label="'+p[1]+'"></button>').join('')+'<span class="caption" id="paintName">'+c.paints[pi][1].toUpperCase()+'</span>'+
+      (GLB[c.id] ? '<button class="tbtn'+(state.detail?' on':'')+'" id="detailBtn" aria-pressed="'+state.detail+'">'+(state.detail?'โมเดลละเอียด':'โมเดลโค้ด')+'</button>' : '');
+    $('tShow').querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>{
+      state.paint[c.id]=+b.dataset.p; renderPaints(); hooks.paint();
+    }));
+    const db = $('detailBtn'); if (db) db.addEventListener('click',()=>{ state.detail = !state.detail; renderPaints(); hooks.detail(); });
+  }
+  const GLB = {
+    civic:{ file:'civic.json', paint:['paint'], title:'2025 Honda Civic RS e:HEV', by:'Palma123 JAAT', url:'https://sketchfab.com/3d-models/0dc6454d74a241e5a08fac82ce2826b2' },
+    altis:{ file:'altis.json', paint:['00_-_Corolla_-_Pintura'], title:'Toyota Corolla Altis', by:'niev', url:'https://sketchfab.com/3d-models/006c00b97d174d03bec347adf52d0bbd' },
+    lambo:{ file:'lambo.json', paint:['CarPaint'], title:'Lamborghini Aventador LP720-4 50th Anniversary', by:'Ddiaz Design', url:'https://sketchfab.com/3d-models/lamborghini-aventador-lp720-4-50th-anniversary-7c210c26a24c4b2d883cee882921cf0c', lic:['CC BY-NC-SA 4.0','https://creativecommons.org/licenses/by-nc-sa/4.0/'], noSelfShadow:true, mod:'ลดขนาดไฟล์ เปลี่ยนสีได้' }
+  };
+  state.detail = true;
+  const hooks = { paint(){}, detail(){}, layers(){}, ctab(){}, grade(){}, renderFocus(){}, look(){} };
+  const CH_KEYS = ['biw_side','biw_roof','biw_floor','biw_front','biw_rear','welds','susp_f','susp_r','steer','brake','drive','elec','harness','ecu','hv','fuel','exh','cool','ac','engine','shell'];
+  const BIW_KEYS = ['biw_side','biw_roof','biw_floor','biw_front','biw_rear'];
+  const SHELL = { th:'ผิวตัวถัง', c:'#626b75', keys:['shell'], d:'แสดงแบบโปร่งเทียบกับรถจริง' };
+  const CH_TABS = [
+    { id:'all', th:'ภาพรวม', lede:'ทุกระบบรวมกันในคันเดียว กดปิดบางระบบเพื่อมองเห็นชั้นที่อยู่ข้างใน', views:['iso','under','side','top'], grade:true,
+      defaults: CH_KEYS.filter(k=>k!=='welds'),
+      toggles:[
+        { th:'โครงสร้างตัวถัง', c:'#c8423f', keys:BIW_KEYS, d:'โครงด้านข้าง พื้น โครงหน้า-หลัง หลังคา' },
+        { th:'ช่วงล่าง', c:'#d8453f', keys:['susp_f','susp_r'], dk:'susp' },
+        { th:'พวงมาลัย', c:'#9fc4ff', keys:['steer'], d:'แร็คไฟฟ้า คันส่ง แกนพวงมาลัย' },
+        { th:'เบรก', c:'#d9a15f', keys:['brake'], d:'จาน คาลิปเปอร์ ABS ท่อเบรก' },
+        { th:'ขับเคลื่อน', c:'#9ea4ab', keys:['drive'], dk:'drive' },
+        { th:'ระบบไฟฟ้า', c:'#5fc9b8', keys:['elec','harness','ecu','hv'], dk:'elec' },
+        { th:'เชื้อเพลิง', c:'#7fc28a', keys:['fuel'], d:'ถัง ท่อเติม ท่อส่ง EVAP' },
+        { th:'ไอเสีย', c:'#a88466', keys:['exh'], d:'แคต ท่อพัก หม้อพักท้าย' },
+        { th:'ความร้อนและแอร์', c:'#a8d8e8', keys:['cool','ac'], d:'หม้อน้ำ พัดลม คอมแอร์ ตู้แอร์' },
+        { th:'เครื่องยนต์', c:'#b8bcc2', keys:['engine'], dk:'engine' },
+        SHELL ] },
+    { id:'biw', th:'โครงสร้างตัวถัง', lede:'โครงตัวถังเปลือย (body-in-white) ก่อนประกอบประตู ฝากระโปรง และบังโคลนหน้า ขึ้นรูปจากเหล็กแผ่นปั๊มแล้วเชื่อมจุดเข้าด้วยกัน แผงด้านข้างวางตามผิวตัวถังของรุ่นนี้', views:['iso','side','front','under'], grade:true,
+      defaults: BIW_KEYS.concat(['welds']),
+      toggles:[
+        { th:'โครงด้านข้าง', c:'#c8423f', keys:['biw_side'], d:'ธรณี เสา A/B/C รางหลังคา แผงข้างท้าย' },
+        { th:'หลังคา', c:'#c8423f', keys:['biw_roof'], d:'คานขวางหน้า กลาง หลัง' },
+        { th:'พื้นและคานขวาง', c:'#8a96a3', keys:['biw_floor'], d:'แผ่นพื้น อุโมงค์ คานใต้เบาะ' },
+        { th:'โครงหน้า', c:'#c9a24f', keys:['biw_front'], d:'คานหน้า crash box ซุ้มล้อ หัวเสาโช้ค ผนังห้องเครื่อง' },
+        { th:'โครงหลัง', c:'#c9a24f', keys:['biw_rear'], d:'คานหลัง พื้นหลัง ซุ้มล้อหลัง คานท้าย' },
+        { th:'จุดเชื่อม', c:'#eef1f3', keys:['welds'], d:'แนวจุดเชื่อมรอบช่องประตูและเสา' },
+        SHELL ] },
+    { id:'susp', th:'ช่วงล่าง', lede:'ช่วงล่าง พวงมาลัย เบรก และเพลาขับ ใช้ปุ่มในภาพซูมไปที่ล้อหน้าหรือล้อหลัง บูชยางแสดงเป็นสีดำ ลูกหมากเป็นลูกกลมสีเทา', views:['wf','wr','under','iso'],
+      defaults:['susp_f','susp_r','steer','brake','drive','shell'],
+      toggles:[
+        { th:'ช่วงล่างหน้า', c:'#d8453f', keys:['susp_f'], dk:'suspF' },
+        { th:'ช่วงล่างหลัง', c:'#d8453f', keys:['susp_r'], dk:'suspR' },
+        { th:'พวงมาลัย', c:'#9fc4ff', keys:['steer'], d:'แร็คไฟฟ้า EPS คันส่ง ลูกหมาก' },
+        { th:'เบรก', c:'#d9a15f', keys:['brake'], d:'จาน คาลิปเปอร์ ดุมล้อ ท่อเบรก' },
+        { th:'เพลาขับ', c:'#9ea4ab', keys:['drive'], dk:'drive' },
+        { th:'โครงตัวถัง', c:'#8a96a3', keys:['biw_floor','biw_front','biw_rear'], d:'จุดยึดช่วงล่างบนตัวถัง' },
+        SHELL ] },
+    { id:'elec', th:'ระบบไฟฟ้า', lede:'ไฟ 12V สายไฟหลัก กล่องควบคุม และระบบไฟแรงสูงของรุ่นไฮบริดหรือไฟฟ้า', views:['iso','bay','side','top'],
+      defaults:['elec','harness','ecu','hv','shell'],
+      toggles:[
+        { th:'แบต 12V และกล่องฟิวส์', c:'#5fc9b8', keys:['elec'], dk:'b12' },
+        { th:'ชุดสายไฟหลัก', c:'#5fc9b8', keys:['harness'], d:'ห้องเครื่อง ธรณี ประตู หลังคา ไฟหน้า-ท้าย' },
+        { th:'กล่องควบคุม', c:'#30353b', keys:['ecu'], d:'ECU เครื่องยนต์ BCM กล่องถุงลม' },
+        { th:'ระบบไฟแรงสูง', c:'#ff8a2b', keys:['hv'], dk:'hv' },
+        { th:'เครื่องยนต์', c:'#b8bcc2', keys:['engine'], dk:'engine' },
+        SHELL ] },
+    { id:'fluid', th:'ท่อและของเหลว', lede:'ทุกอย่างที่มีของเหลวหรือก๊าซไหลผ่าน ทั้งน้ำมัน ไอเสีย น้ำหล่อเย็น น้ำยาแอร์ และน้ำมันเบรก', views:['under','iso','bay','side'],
+      defaults:['fuel','exh','cool','ac','brake','engine','shell'],
+      toggles:[
+        { th:'เชื้อเพลิง', c:'#7fc28a', keys:['fuel'], d:'ถัง ท่อเติม ท่อส่ง รางหัวฉีด EVAP' },
+        { th:'ไอเสีย', c:'#a88466', keys:['exh'], d:'แคต เซ็นเซอร์ O2 ท่อพัก หม้อพักท้าย' },
+        { th:'ระบายความร้อน', c:'#4b5058', keys:['cool'], d:'หม้อน้ำ พัดลม ท่อน้ำ ถังพัก' },
+        { th:'แอร์', c:'#a8d8e8', keys:['ac'], dk:'ac' },
+        { th:'ท่อเบรก', c:'#d9a15f', keys:['brake'], d:'แม่ปั๊ม ABS ท่อไป 4 ล้อ' },
+        { th:'เครื่องยนต์', c:'#b8bcc2', keys:['engine'], dk:'engine' },
+        SHELL ] }
+  ];
+  state.ctab = 'all'; state.grade = false; state.layers = {}; state.focus = null;
+  CH_KEYS.forEach(k=>state.layers[k] = CH_TABS[0].defaults.includes(k));
+  function chInfo(c, t){
+    const ev = t.kind==='ev', hyb = t.kind==='hybrid', pack = ev || !!t.pack, rear = c.rearSusp==='dw' ? 'ดับเบิลวิชโบน' : 'มัลติลิงก์', stab = c.rearStab(t);
+    return {
+      summary: c.name+' '+t.name+' · หน้า'+(c.frontSusp||'แม็คเฟอร์สันสตรัท')+' · หลัง'+rear+(stab?' มีเหล็กกันโคลงหลัง':' ไม่มีเหล็กกันโคลงหลัง')+' · '+(ev?'ขับล้อหลัง':c.mid?'เครื่องวางกลางลำ ขับสี่ล้อ':c.rearEngine?'เครื่องวางท้าย ขับล้อหลัง':'ขับล้อหน้า')+(c.id==='kr1'?' · ค่าสมมติ':''),
+      d: {
+        susp:(c.frontSusp?'ปีกนกคู่หน้า ':'สตรัทหน้า ')+rear+'หลัง ซับเฟรม เหล็กกันโคลง', suspF:c.frontSusp ? c.frontSusp+' ปีกนกบน-ล่าง ลูกหมาก บูช เหล็กกันโคลง' : 'สตรัท ปีกนกล่าง ลูกหมาก บูช ซับเฟรม เหล็กกันโคลง', suspR: rear+(stab?' พร้อมเหล็กกันโคลงหลัง':' ไม่มีเหล็กกันโคลงหลัง'),
+        drive: ev?'มอเตอร์หลัง เพลาขับหลัง':c.awd?'ขับสี่ล้อ เพลากลาง เพลาขับหน้า-หลัง':'เพลาขับหน้า ข้อต่อ CV',
+        elec: hyb?'แบต 12V สายไฟ กล่องควบคุม ไฟแรงสูง':pack?'แบต 12V สายไฟ กล่องควบคุม แบตใต้พื้น':'แบต 12V สายไฟ กล่องควบคุม',
+        b12: (hyb||ev)?'แบต 12V กล่องฟิวส์ ชาร์จผ่าน DC-DC':'แบต 12V กล่องฟิวส์ ไดชาร์จ ไดสตาร์ท',
+        hv: hyb?'แบตไฮบริด สายส้ม ปลั๊กตัดไฟ':'แบตใต้พื้น สายแรงสูง',
+        engine: ev?'มอเตอร์ไฟฟ้าที่เพลาหลัง':t.engineTxt,
+        ac: (hyb||ev)?'คอมแอร์ไฟฟ้า คอนเดนเซอร์ ตู้แอร์':'คอมแอร์ คอนเดนเซอร์ ตู้แอร์'
+      },
+      off: { fuel:ev, exh:ev, hv:!(hyb||pack) }
+    };
+  }
+  function renderChPanel(){
+    const c = state.car, t = curTrim(), tab = CH_TABS.find(x=>x.id===state.ctab), info = chInfo(c, t);
+    $('chTabs').innerHTML = CH_TABS.map(x=>'<button type="button" role="tab" data-ctab="'+x.id+'" aria-selected="'+(x===tab)+'"'+(x===tab?' class="on"':'')+'>'+x.th+'</button>').join('');
+    $('chTabs').querySelectorAll('[data-ctab]').forEach(b=>b.addEventListener('click',()=>setCTab(b.dataset.ctab)));
+    $('chSummary').textContent = info.summary;
+    $('chLede').textContent = tab.lede;
+    const EYE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const EYE_OFF = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.6A17 17 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 4.4-1"/></svg>';
+    $('chLayers').innerHTML = tab.toggles.map((tg,i)=>{
+      const na = tg.keys.every(k=>info.off[k]), on = !na && tg.keys.some(k=>state.layers[k]), foc = state.focus===i;
+      const d = na ? 'ไม่มีในรุ่นนี้' : (tg.dk ? info.d[tg.dk] : tg.d);
+      return '<div class="chcard'+(foc?' focus':'')+(on?'':' off')+(na?' na':'')+'">'
+        + '<button type="button" class="chmain" data-focus="'+i+'" aria-pressed="'+foc+'"'+(na?' disabled':'')+'><i style="background:'+tg.c+'"></i><span><b>'+tg.th+'</b><small>'+d+'</small></span></button>'
+        + '<button type="button" class="cheye" data-eye="'+i+'" aria-pressed="'+on+'" aria-label="'+(on?'ซ่อน ':'แสดง ')+tg.th+'" title="'+(on?'ซ่อน':'แสดง')+'"'+(na?' disabled':'')+'>'+(on?EYE:EYE_OFF)+'</button></div>';
+    }).join('');
+    $('chLayers').querySelectorAll('[data-focus]').forEach(b=>b.addEventListener('click',()=>{
+      const i = +b.dataset.focus;
+      if (state.focus===i) state.focus = null; else { state.focus = i; tab.toggles[i].keys.forEach(k=>state.layers[k] = true); }
+      renderChPanel(); hooks.layers();
+    }));
+    $('chLayers').querySelectorAll('[data-eye]').forEach(b=>b.addEventListener('click',()=>{
+      const tg = tab.toggles[+b.dataset.eye], on = tg.keys.some(k=>state.layers[k]);
+      tg.keys.forEach(k=>state.layers[k] = !on); renderChPanel(); hooks.layers();
+    }));
+    const leg = $('chLegend');
+    if (tab.grade){
+      leg.innerHTML = '<button type="button" class="tbtn'+(state.grade?' on':'')+'" id="gradeBtn" aria-pressed="'+state.grade+'">'+(state.grade?'สี: ตามเกรดเหล็ก':'สี: เหล็กชุบกัลวาไนซ์')+'</button>'
+        + (state.grade ? '<span><i style="background:#c8423f"></i>เหล็กขึ้นรูปร้อน ≥1,500 MPa</span><span><i style="background:#c9a24f"></i>เหล็กแข็งแรงสูง 590–980 MPa</span><span><i style="background:#8a96a3"></i>เหล็กแผ่นทั่วไป</span><span>แบ่งเกรดแบบทั่วไปของรถยุคนี้ ไม่ใช่ผังวัสดุทางการของรุ่นนี้</span>'
+                       : '<span>สีเงินคือเหล็กชุบกัลวาไนซ์ก่อนเข้าสายพ่นสี แบบเดียวกับโครงรถในโรงงาน กดปุ่มเพื่อดูสีตามเกรดเหล็ก</span>');
+      $('gradeBtn').addEventListener('click',()=>{ state.grade = !state.grade; renderChPanel(); hooks.grade(); });
+    } else {
+      leg.innerHTML = '<span>ตำแหน่งและขนาดชิ้นส่วนเป็นแบบประมาณตามหลักวิศวกรรมทั่วไป ไม่ใช่แบบจากผู้ผลิต</span>';
+    }
+    hooks.renderFocus();
+  }
+  function setCTab(id){
+    const tab = CH_TABS.find(x=>x.id===id); if (!tab) return;
+    state.ctab = id; state.focus = null; CH_KEYS.forEach(k=>state.layers[k] = tab.defaults.includes(k));
+    renderChPanel(); hooks.ctab();
+  }
+  const LOOKS = [['studio','Studio'],['track','Pit Lane'],['drafting','Drafting'],['gallery','Gallery']];
+  function applyLook(id){
+    if (!LOOKS.some(l=>l[0]===id)) id = 'studio';
+    document.documentElement.dataset.look = id;
+    try { localStorage.setItem('kritrod-look', id); } catch(e){}
+    document.querySelectorAll('[data-lk]').forEach(b=>{ const on = b.dataset.lk===id; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
+    hooks.look(id);
+  }
+  $('looks').insertAdjacentHTML('beforeend', LOOKS.map(l=>'<button type="button" role="radio" data-lk="'+l[0]+'" aria-checked="false">'+l[1]+'</button>').join(''));
+  $('looks').querySelectorAll('[data-lk]').forEach(b=>b.addEventListener('click',()=>applyLook(b.dataset.lk)));
+  { let saved = null; try { saved = localStorage.getItem('kritrod-look'); } catch(e){} applyLook(saved || 'studio'); }
+  function renderText(){ renderHead(); renderInfo(); renderVariants(); renderProfile(); renderTable(); renderPaints(); renderChPanel(); }
+
+  let cur = null;           // current 3D build
+  let setCar = id => { state.car = CARS.find(c=>c.id===id); renderText(); };
+  let setTrim = i => { state.trim[state.car.id]=i; renderText(); };
+  renderText();
+
+  // ---- 3D ----------------------------------------------------------------------------------------
+  const canvas = $('cv');
+  if (!window.THREE || !THREE.OrbitControls){
+    $('viewer').insertAdjacentHTML('beforeend','<div class="fallback">โหลดไลบรารี 3 มิติไม่สำเร็จ ลองรีเฟรชหน้า หรือเปิดด้วยเบราว์เซอร์รุ่นล่าสุด</div>');
+    return;
+  }
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({canvas, antialias:true}); }
+  catch(e){ $('viewer').insertAdjacentHTML('beforeend','<div class="fallback">เบราว์เซอร์นี้เปิด WebGL ไม่ได้ จึงแสดงโมเดล 3 มิติไม่ได้</div>'); return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  const scene = new THREE.Scene();
+  const SHOW_BG = new THREE.Color('#101318'), BLUE_BG = new THREE.Color('#123f6e'), ENG_BG = new THREE.Color('#0b0c0f');
+  scene.background = SHOW_BG.clone();
+  const camera = new THREE.PerspectiveCamera(32, 16/9, 0.1, 100);
+  camera.position.set(6.6, 1.9, 6.8);
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true; controls.dampingFactor = 0.08;
+  controls.target.set(0, 0.6, 0);
+  controls.minDistance = 3; controls.maxDistance = 16; controls.maxPolarAngle = Math.PI*0.495;
+  controls.autoRotate = !reduce; controls.autoRotateSpeed = 0.6;
+
+  (function(){
+    const env = new THREE.Scene();
+    env.add(new THREE.Mesh(new THREE.BoxGeometry(30,14,30), new THREE.MeshBasicMaterial({color:0x0a0b0d, side:THREE.BackSide})));
+    const panel = (w,h,x,y,z,ry,rx,i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({color:new THREE.Color(i,i,i), side:THREE.DoubleSide})); m.position.set(x,y,z); m.rotation.set(rx||0,ry||0,0); env.add(m); };
+    panel(14,2.2, 0,6.8,0, 0,Math.PI/2, 3.0);
+    panel(8,4, -12,3,0, Math.PI/2,0, 1.4);
+    panel(8,4, 12,3,4, -Math.PI/2,0, 1.0);
+    panel(12,3, 0,2.5,-14, 0,0, 0.7);
+    const pm = new THREE.PMREMGenerator(renderer);
+    scene.environment = pm.fromScene(env, 0.02).texture;
+  })();
+
+  const hemi = new THREE.HemisphereLight(0xdfe8f5, 0x16181c, 0.35); scene.add(hemi);
+  const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(4,8,5); key.castShadow = true;
+  key.shadow.mapSize.set(2048,2048); Object.assign(key.shadow.camera, {left:-5,right:5,top:5,bottom:-5,near:1,far:25}); key.shadow.radius = 4;
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x9fc4ff, 0.6); rim.position.set(-6,3,-5); scene.add(rim);
+
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(9, 64), new THREE.MeshStandardMaterial({color:0x0e1014, roughness:0.9, metalness:0, envMapIntensity:0.08}));
+  floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+  const grid = new THREE.GridHelper(20, 40, 0xcfe3ff, 0xcfe3ff);
+  grid.material.transparent = true; grid.material.opacity = 0; grid.position.y = 0.001; scene.add(grid);
+  const LOOK3D = { studio:{ bg:'#101318', eng:'#0b0c0f', floor:0x0e1014 }, track:{ bg:'#0d1428', eng:'#070b16', floor:0x0b1122 }, drafting:{ bg:'#dde3e6', eng:'#cfd6da', floor:0xc3cbd0 }, gallery:{ bg:'#121217', eng:'#0b0b0e', floor:0x0f0f13 } };
+  hooks.look = id => { const L = LOOK3D[id] || LOOK3D.studio; SHOW_BG.set(L.bg); ENG_BG.set(L.eng); floor.material.color.set(L.floor); };
+  hooks.look(document.documentElement.dataset.look);
+
+  const edgeMat = new THREE.LineBasicMaterial({color:0xcfe3ff, transparent:true, opacity:0});
+
+  // engine materials (never ghosted)
+  const alu = new THREE.MeshStandardMaterial({color:0x9ea4ab, roughness:0.45, metalness:0.75});
+  const darkAlu = new THREE.MeshStandardMaterial({color:0x4b5058, roughness:0.5, metalness:0.6});
+  const redM = new THREE.MeshStandardMaterial({color:0xb3202a, roughness:0.35, metalness:0.3});
+  const steel = new THREE.MeshStandardMaterial({color:0xc9ccd1, roughness:0.25, metalness:0.95});
+  const hot = new THREE.MeshStandardMaterial({color:0x8a6a4a, roughness:0.5, metalness:0.8});
+  const plastic = new THREE.MeshStandardMaterial({color:0x2a2c30, roughness:0.6});
+  const orange = new THREE.MeshStandardMaterial({color:0xd9772b, roughness:0.5, metalness:0.2});
+  const battM = new THREE.MeshStandardMaterial({color:0x2c6e9e, roughness:0.4, metalness:0.5, emissive:0x0b2a44});
+
+  // ---- geometry helpers -----------------------------------------------------------------------
+  function loft(xs, thetas, fn, pad, closed, off){
+    const pos=[], idx=[], M=thetas.length;
+    xs.forEach(x=>thetas.forEach(th=>{ const p=fn(x,th,pad); pos.push(p[0]+off, p[1], p[2]); }));
+    const cols = closed ? M : M-1;
+    for (let i=0;i<xs.length-1;i++) for (let j=0;j<cols;j++){
+      const j2=(j+1)%M, a=i*M+j, b=i*M+j2, c=(i+1)*M+j, d=(i+1)*M+j2; idx.push(a,c,b, b,c,d);
+    }
+    const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); g.setIndex(idx); g.computeVertexNormals();
+    return g;
+  }
+  const range = (a,b,n) => Array.from({length:n+1},(_,i)=>a+(b-a)*i/n);
+  const deg = d => d*Math.PI/180;
+  function strip(pairs, mat){
+    if (pairs.length<2) return null;
+    const pos=[], idx=[];
+    pairs.forEach(([a,b])=>pos.push(a[0],a[1],a[2],b[0],b[1],b[2]));
+    for (let i=0;i<pairs.length-1;i++){ const k=i*2; idx.push(k,k+1,k+2, k+1,k+3,k+2); }
+    const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); g.setIndex(idx); g.computeVertexNormals();
+    return new THREE.Mesh(g, mat);
+  }
+
+  function buildCar(def, trim){
+    const sh=SHAPES[def.id], off=sh.off, L=sh.L;
+    const group=new THREE.Group();
+    const paint = new THREE.MeshPhysicalMaterial({color:new THREE.Color(def.paints[state.paint[def.id]][0]), metalness:0.45, roughness:0.36, clearcoat:1, clearcoatRoughness:0.08, envMapIntensity:0.6, side:THREE.DoubleSide});
+    const glass = new THREE.MeshPhysicalMaterial({color:0x0b1016, metalness:0.2, roughness:0.05, opacity:0.9, transparent:true, clearcoat:1, side:THREE.DoubleSide});
+    const trimM = new THREE.MeshStandardMaterial({color:0x111214, roughness:0.5, metalness:0.3, side:THREE.DoubleSide});
+    const grilleM = new THREE.MeshStandardMaterial({color:0x07080a, roughness:0.75, metalness:0.2, side:THREE.DoubleSide});
+    const chromeM = new THREE.MeshStandardMaterial({color:0xd8dce0, roughness:0.15, metalness:1, side:THREE.DoubleSide});
+    const plateM = new THREE.MeshStandardMaterial({color:0xe8e8e2, roughness:0.6, side:THREE.DoubleSide});
+    const headM = new THREE.MeshStandardMaterial({color:0xffffff, emissive:0xdfefff, emissiveIntensity:1.5, side:THREE.DoubleSide});
+    const tailM = new THREE.MeshStandardMaterial({color:0x550000, emissive:0xff2230, emissiveIntensity:1.3, side:THREE.DoubleSide});
+    const tireM = new THREE.MeshStandardMaterial({color:0x151515, roughness:0.92});
+    const rimM = new THREE.MeshStandardMaterial({color:new THREE.Color(trim.rimCol), roughness:0.28, metalness:0.9});
+    const faceM = new THREE.MeshStandardMaterial({color:new THREE.Color(trim.face), roughness:0.5, metalness:0.5});
+    const discM = new THREE.MeshStandardMaterial({color:0x6d7075, roughness:0.4, metalness:0.8});
+    const caliM = new THREE.MeshStandardMaterial({color:def.id==='kr1'?0xd9b25f:0x2a2c30, roughness:0.4, metalness:0.3});
+    const MATS = { head:headM, tail:tailM, trim:trimM, grille:grilleM, chrome:chromeM, plate:plateM };
+    const mats = [paint, glass, trimM, grilleM, chromeM, plateM, headM, tailM, tireM, rimM, faceM, discM, caliM];
+    const roofM = def.blackRoof ? new THREE.MeshPhysicalMaterial({color:0x0b0c0e, metalness:0.2, roughness:0.15, clearcoat:1, clearcoatRoughness:0.05, side:THREE.DoubleSide}) : paint;
+    const bladeM = new THREE.MeshPhysicalMaterial({color:0x15171a, metalness:0.3, roughness:0.35, clearcoat:1, side:THREE.DoubleSide});
+    const accentM = new THREE.MeshStandardMaterial({color:0xd9b25f, metalness:0.8, roughness:0.3, side:THREE.DoubleSide});
+    if (roofM!==paint) mats.push(roofM); mats.push(bladeM, accentM);
+    const add = m => { if (m){ m.castShadow = true; m.receiveShadow = true; group.add(m); } return m; };
+
+    // body
+    const xs = new Set(range(0, L, 170).map(v=>+v.toFixed(4)));
+    sh.axles.forEach(cx=>{ range(cx-sh.Ra-0.02, cx+sh.Ra+0.02, 44).forEach(v=>xs.add(+v.toFixed(4))); xs.add(+(cx-sh.Ra+0.001).toFixed(4)); xs.add(+(cx+sh.Ra-0.001).toFixed(4)); });
+    const bxs = [...xs].filter(v=>v>=0 && v<=L).sort((a,b)=>a-b);
+    const TH = range(0, Math.PI*2, 72).slice(0,72);
+    add(new THREE.Mesh(loft(bxs, TH, sh.bodyPt, 0, true, off), paint));
+    // greenhouse glass + painted roof and pillars
+    const gxs = range(sh.g0, sh.g1, 90);
+    const GTH = range(0, Math.PI*2, 64).slice(0,64);
+    add(new THREE.Mesh(loft(gxs, GTH, sh.ghPt, 0, true, off), glass));
+    const within = (a,b) => gxs.filter(x=>x>=a && x<=b).concat([a,b]).sort((p,q)=>p-q);
+    add(new THREE.Mesh(loft(range(def.rgTop-0.02, def.wsTop+0.02, 40), range(deg(36),deg(144),28), sh.ghPt, 0.004, false, off), roofM));
+    [[deg(20),deg(40)],[deg(140),deg(160)]].forEach(([a,b])=>{
+      add(new THREE.Mesh(loft(within(def.wsTop-0.02, sh.g1-0.01), range(a,b,6), sh.ghPt, 0.004, false, off), roofM));
+      add(new THREE.Mesh(loft(within(sh.g0+0.01, def.rgTop+0.02), range(a,b,6), sh.ghPt, 0.004, false, off), roofM));
+    });
+    if (def.bPillar){
+      [[deg(-75),deg(28)],[deg(152),deg(255)]].forEach(([a,b])=>add(new THREE.Mesh(loft(range(def.bPillar-0.045, def.bPillar+0.045, 4), range(a,b,24), sh.ghPt, 0.003, false, off), trimM)));
+    }
+    // fender liners
+    sh.axles.forEach(cx=>{
+      const lg = new THREE.CylinderGeometry(sh.Ra-0.01, sh.Ra-0.01, sh.W*0.92, 32, 1, true, -Math.PI/2, Math.PI);
+      const m = new THREE.Mesh(lg, grilleM); m.rotation.x = Math.PI/2; m.position.set(off+cx, sh.Rc, 0); group.add(m);
+    });
+
+    // surface-following strips
+    const planN = (fnW, x, y) => { const e=0.004, d=(fnW(x+e,y)-fnW(x-e,y))/(2*e), l=Math.hypot(d,1); return [-d/l, 1/l]; };
+    const surf = (fnW, x, y, side, pad) => { const z=fnW(x,y), n=planN(fnW,x,y); return [x+off+n[0]*pad, y, side*(z+n[1]*pad)]; };
+    const endX = (z, y, front) => {
+      const need = Math.max(z, 1e-3);
+      if (front){ for (let x=L-0.001; x>L-1.4; x-=0.003) if (sh.hw(x,y) >= need) return x; }
+      else { for (let x=0.001; x<1.4; x+=0.003) if (sh.hw(x,y) >= need) return x; }
+      return null;
+    };
+    def.lights.forEach(lt=>{
+      const pad = lt.pad || 0.006, sides = lt.mirror ? [1,-1] : [1];
+      sides.forEach(sd=>{
+        // rows follow the curved face so tall parts (grilles, diffusers) sit on the surface instead of cutting through it
+        const nv = Math.max(1, Math.round(Math.max(lt.yh[0]-lt.yl[0], lt.yh[1]-lt.yl[1])/0.015)), cols = [];
+        range(0,1,48).forEach(t=>{
+          const zz = lt.z0 + (lt.z1-lt.z0)*t, z = Math.abs(zz), side = (lt.mirror ? sd : sgn(zz));
+          const yl = lt.yl[0]+(lt.yl[1]-lt.yl[0])*t, yh = lt.yh[0]+(lt.yh[1]-lt.yh[0])*t, col = [];
+          for (let j=0;j<=nv;j++){ const y = yl+(yh-yl)*j/nv, x = endX(z, y, lt.f); if (x===null) return; col.push(surf(sh.hw, x, y, side, pad)); }
+          cols.push(col);
+        });
+        if (cols.length < 2) return;
+        const pos = [], idx = [];
+        cols.forEach(c=>c.forEach(q=>pos.push(q[0],q[1],q[2])));
+        for (let i=0;i<cols.length-1;i++) for (let j=0;j<nv;j++){ const a = i*(nv+1)+j, c = a+nv+1; idx.push(a,c,a+1, a+1,c,c+1); }
+        const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); lg.setIndex(idx); lg.computeVertexNormals();
+        add(new THREE.Mesh(lg, MATS[lt.m]));
+      });
+    });
+    const sideY = (fnW, x, y0, y1, dx, mat, pad, n) => [1,-1].forEach(sd=>{
+      const pairs=[]; range(y0,y1,n||14).forEach(y=>{ if (fnW(x,y)>0 && fnW(x+dx,y)>0) pairs.push([surf(fnW,x,y,sd,pad), surf(fnW,x+dx,y,sd,pad)]); });
+      add(strip(pairs, mat));
+    });
+    const sideX = (fnW, x0, x1, ylo, yhi, mat, pad) => [1,-1].forEach(sd=>{
+      const pairs=[]; range(x0,x1,40).forEach(x=>{ const a=ylo(x), b=yhi(x); if (fnW(x,a)>0 && fnW(x,b)>0) pairs.push([surf(fnW,x,a,sd,pad), surf(fnW,x,b,sd,pad)]); });
+      add(strip(pairs, mat));
+    });
+    def.doorLines.forEach(x=>sideY(sh.hw, x, sh.bot(x)+0.07, sh.top(x)-0.012, 0.005, grilleM, 0.003, 18));
+    sideX(sh.ghw, sh.g0+0.12, sh.g1-0.12, x=>sh.top(x)-0.035, x=>sh.top(x)-0.012, MATS[def.beltTrim], 0.004);
+    if (def.blade){
+      sideX(sh.hw, sh.axles[0]+sh.Ra+0.04, sh.axles[1]-sh.Ra-0.04, x=>sh.bot(x)+0.06, x=>sh.bot(x)+0.16, bladeM, 0.004);
+      sideX(sh.hw, sh.axles[0]+sh.Ra+0.10, sh.axles[1]-sh.Ra-0.10, x=>sh.bot(x)+0.163, x=>sh.bot(x)+0.171, accentM, 0.005);
+    }
+    if (def.fins){
+      for (let i=-2;i<=2;i++){ const f = new THREE.Mesh(new THREE.BoxGeometry(0.24,0.09,0.012), trimM); f.position.set(off+0.15, 0.25, i*0.22); group.add(f); }
+      if (trim.kind!=='ev') [-0.52,-0.40,0.40,0.52].forEach(z=>{ const t = new THREE.Mesh(new THREE.CylinderGeometry(0.036,0.036,0.14,24,1,true), chromeM); t.rotation.z = Math.PI/2; t.position.set(off+0.07, 0.28, z); group.add(t); });
+    }
+    if (def.sillTrim) sideX(sh.hw, sh.axles[0]+sh.Ra+0.03, sh.axles[1]-sh.Ra-0.03, x=>sh.bot(x)+0.035, x=>sh.bot(x)+0.10, trimM, 0.003);
+    def.handles.forEach(x=>{ const y=sh.top(x)-0.10; [1,-1].forEach(sd=>{ const m=new THREE.Mesh(new THREE.BoxGeometry(0.15,0.025,0.02), def.beltTrim==='chrome'?chromeM:paint); m.position.set(off+x, y, sd*(sh.hw(x,y)+0.008)); group.add(m); }); });
+    // mirrors
+    { const xm = sh.g1-0.14, ym = sh.top(xm)+0.085, zb = sh.hw(xm, sh.top(xm)-0.03);
+      [1,-1].forEach(sd=>{
+        const hsg = new THREE.Mesh(new THREE.BoxGeometry(0.17,0.11,0.17), def.blackRoof ? roofM : paint); hsg.position.set(off+xm, ym, sd*(zb+0.075)); add(hsg);
+        const stalk = new THREE.Mesh(new THREE.BoxGeometry(0.07,0.04,0.12), trimM); stalk.position.set(off+xm+0.02, ym-0.035, sd*(zb+0.02)); group.add(stalk);
+      }); }
+
+    // wheels
+    const wheels=[];
+    function makeWheel(){
+      const g = new THREE.Group(), R=trim.R, tw=trim.tw, rr=trim.rimR, fz=tw/2;
+      const tire = new THREE.Mesh(new THREE.CylinderGeometry(R, R, tw, 48, 1, true), tireM); tire.rotation.x = Math.PI/2; tire.castShadow = true; g.add(tire);
+      [fz-0.004, -fz+0.004].forEach(z=>{ const wall = new THREE.Mesh(new THREE.RingGeometry(rr, R-0.02, 48), tireM); wall.position.z = z; if (z<0) wall.rotation.y = Math.PI; g.add(wall); });
+      const side = new THREE.Mesh(new THREE.TorusGeometry(R-0.028, 0.028, 12, 48), tireM); side.position.z = fz-0.012; g.add(side);
+      const face = new THREE.Mesh(new THREE.CylinderGeometry(rr, rr, 0.02, 40), faceM); face.rotation.x = Math.PI/2; face.position.z = fz-0.03; g.add(face);
+      const disc = new THREE.Mesh(new THREE.CylinderGeometry(rr*0.72, rr*0.72, 0.02, 32), discM); disc.rotation.x = Math.PI/2; disc.position.z = fz-0.055; g.add(disc);
+      const cal = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.13, 0.05), caliM); cal.position.set(rr*0.55, rr*0.35, fz-0.04); g.add(cal);
+      const lip = new THREE.Mesh(new THREE.TorusGeometry(rr, 0.011, 8, 48), rimM); lip.position.z = fz-0.012; g.add(lip);
+      const spokes = new THREE.Group(), n=trim.spokes, len=rr-0.05;
+      for (let i=0;i<n;i++){
+        const angs = trim.twin ? [-0.09, 0.09] : [0];
+        angs.forEach(da=>{ const sp = new THREE.Mesh(new THREE.BoxGeometry(trim.twin?0.022:(n>6?0.024:0.036), len, 0.025), rimM); sp.position.y = 0.045+len/2; const h = new THREE.Group(); h.add(sp); h.rotation.z = i*2*Math.PI/n + da; spokes.add(h); });
+      }
+      spokes.position.z = fz-0.016; g.add(spokes);
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.035,20), rimM); hub.rotation.x = Math.PI/2; hub.position.z = fz-0.01; g.add(hub);
+      const el = new THREE.LineSegments(new THREE.EdgesGeometry(tire.geometry, 28), edgeMat); el.rotation.x = Math.PI/2; g.add(el);
+      g.userData.spin = [spokes, hub];
+      return g;
+    }
+    const tr = (trim.track || [1530,1530]).map(v=>v/1000);
+    [[sh.axles[1],1,tr[0]],[sh.axles[1],-1,tr[0]],[sh.axles[0],1,tr[1]],[sh.axles[0],-1,tr[1]]].forEach(([x,sd,t])=>{
+      const w = makeWheel(); w.position.set(off+x, trim.R, sd*(t/2 - 0.01)); if (sd<0) w.rotation.y = Math.PI; group.add(w); wheels.push(w);
+    });
+
+    // blueprint lines
+    const edges = new THREE.Group(); group.add(edges);
+    const polyline = pts => { const g=new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(p[0]+off,p[1],p[2]))); edges.add(new THREE.Line(g, edgeMat)); };
+    const lxs = range(0, L, 220);
+    [0, 45, 90, 135, 180, 270].forEach(d=>polyline(lxs.map(x=>sh.bodyPt(x, deg(d), 0.002))));
+    const ring = x => polyline(range(0, Math.PI*2, 72).map(th=>sh.bodyPt(x, th, 0.002)));
+    for (let x=0.3; x<L-0.1; x+=0.45) ring(x);
+    [0, 45, 90, 135, 180].forEach(d=>polyline(gxs.map(x=>sh.ghPt(x, deg(d), 0.003))));
+    [def.rgTop, def.wsTop].concat(def.bPillar?[def.bPillar]:[]).forEach(x=>polyline(range(0, Math.PI, 32).map(th=>sh.ghPt(x, th, 0.003))));
+
+    // engine
+    const engine = new THREE.Group(); engine.visible = false; group.add(engine);
+    const engX = def.mid ? sh.axles[0]+def.mid : def.rearEngine ? sh.axles[0]-0.32 : sh.axles[1]+0.08;
+    engine.position.set(off+engX, 0.52, 0); engine.scale.setScalar(def.engScale); if (def.rearEngine) engine.rotation.y = -Math.PI/2;
+    const partGroups = {};
+    const keys = new Set(trim.parts.map(p=>p.k));
+    function part(k, dir){ const g = new THREE.Group(); g.userData = {k, dir:new THREE.Vector3(...dir)}; engine.add(g); partGroups[k]=g; return g; }
+    // V12 (60° vee, two banks of six) — local z runs along the crank, gearbox ahead of the block at -z
+    function v12Parts(){
+      const bz = [-0.33,-0.20,-0.07,0.07,0.20,0.33], S2 = [1,-1], a = Math.PI/6;
+      const at = (s,d,w) => [s*Math.sin(a)*d + (w||0)*s*Math.cos(a), -0.20 + Math.cos(a)*d - (w||0)*Math.sin(a)];
+      const bk = (g, s, d, w, h, len, mat, z, lat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,len), mat); const p = at(s,d,lat); m.position.set(p[0],p[1],z||0); m.rotation.z = -s*a; g.add(m); return m; };
+      const cy = (g, s, d, r, h, mat, z, lat) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,20), mat); const p = at(s,d,lat); m.position.set(p[0],p[1],z||0); m.rotation.z = -s*a; g.add(m); return m; };
+      const V3 = (x,y,z) => new THREE.Vector3(x,y,z), tb = (g, pts, r, mat) => g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, r, 10), mat));
+      if (keys.has('block')){ const g = part('block',[0,0,0]); const c = new THREE.Mesh(new THREE.BoxGeometry(0.46,0.20,0.86), alu); c.position.y = -0.18; g.add(c);
+        S2.forEach(s=>{ bk(g, s, 0.20, 0.20, 0.30, 0.86, alu); bz.forEach(z=>cy(g, s, 0.356, 0.046, 0.012, darkAlu, z)); }); }
+      if (keys.has('head')){ const g = part('head',[0,0.55,0]); S2.forEach(s=>{ bk(g, s, 0.42, 0.21, 0.12, 0.86, alu);
+        [-0.05,0.05].forEach(l=>{ const m = new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.84,12), steel); const p = at(s,0.49,l); m.rotation.x = Math.PI/2; m.position.set(p[0],p[1],0); g.add(m); }); }); }
+      if (keys.has('cover')){ const g = part('cover',[0,1.0,0]); S2.forEach(s=>{ bk(g, s, 0.52, 0.18, 0.06, 0.82, plastic); bz.forEach(z=>cy(g, s, 0.56, 0.016, 0.05, redM, z)); }); }
+      if (keys.has('pistons')){ const g = part('pistons',[0,0.25,0]); S2.forEach(s=>bz.forEach((z,i)=>{ const d = (i+(s>0?0:1))%2 ? 0.30 : 0.24;
+        cy(g, s, d, 0.044, 0.06, steel, z); bk(g, s, d-0.09, 0.02, 0.14, 0.02, steel, z); })); }
+      if (keys.has('crank')){ const g = part('crank',[0,-0.45,0]); const sh = new THREE.Mesh(new THREE.CylinderGeometry(0.026,0.026,0.96,16), steel); sh.rotation.x = Math.PI/2; sh.position.y = -0.20; g.add(sh);
+        bz.forEach((z,i)=>{ const w = new THREE.Mesh(new THREE.BoxGeometry(0.11,0.12,0.03), steel); w.position.set(0, -0.20+(i%2?0.04:-0.04), z); w.rotation.z = i*Math.PI/3; g.add(w); }); }
+      if (keys.has('intake')){ const g = part('intake',[0,0.75,0]); S2.forEach(s=>{ const pl = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.80,20), plastic); pl.rotation.x = Math.PI/2; pl.position.set(s*0.055, 0.30, 0); g.add(pl);
+        bz.forEach(z=>{ const h = at(s,0.40,-0.11); tb(g, [V3(s*0.055,0.30,z), V3(s*0.07,0.34,z), V3(h[0],h[1]+0.02,z)], 0.022, plastic); }); }); }
+      if (keys.has('exhaust')){ const g = part('exhaust',[0,-0.55,0]); S2.forEach(s=>bz.forEach(z=>{ const h = at(s,0.38,0.12);
+        tb(g, [V3(h[0],h[1],z), V3(s*0.36,0.02,z), V3(s*0.33,-0.16,z*0.6+0.12), V3(s*0.28,-0.22,0.50)], 0.02, hot); })); }
+      if (keys.has('gearbox')){ const g = part('gearbox',[0,0,-0.9]); const bh = new THREE.Mesh(new THREE.CylinderGeometry(0.21,0.18,0.16,32), alu); bh.rotation.x = Math.PI/2; bh.position.set(0,-0.18,-0.51); g.add(bh);
+        const gc = new THREE.Mesh(new THREE.BoxGeometry(0.28,0.26,0.38), darkAlu); gc.position.set(0,-0.18,-0.78); g.add(gc);
+        const sel = new THREE.Mesh(new THREE.BoxGeometry(0.14,0.08,0.20), plastic); sel.position.set(0,-0.01,-0.76); g.add(sel); }
+      if (keys.has('pan')){ const g = part('pan',[0,-0.95,0]); const m = new THREE.Mesh(new THREE.BoxGeometry(0.44,0.06,0.82), darkAlu); m.position.y = -0.31; g.add(m); }
+    }
+    const cylZ = [-0.24,-0.08,0.08,0.24];
+    if (def.v12) v12Parts();
+    else {
+    if (keys.has('block')){ const g = part('block',[0,0,0]); g.add(new THREE.Mesh(new THREE.BoxGeometry(0.36,0.30,0.66), alu));
+      cylZ.forEach(z=>{ const b = new THREE.Mesh(new THREE.CylinderGeometry(0.065,0.065,0.02,24), darkAlu); b.position.set(0,0.151,z); g.add(b); }); }
+    if (keys.has('head')){ const g = part('head',[0,0.55,0]); const m = new THREE.Mesh(new THREE.BoxGeometry(0.34,0.14,0.66), alu); m.position.y = 0.23; g.add(m);
+      [-0.07,0.07].forEach(x=>{ const cam = new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.64,12), steel); cam.rotation.x = Math.PI/2; cam.position.set(x,0.31,0); g.add(cam); }); }
+    if (keys.has('cover')){ const g = part('cover',[0,1.1,0]); const m = new THREE.Mesh(new THREE.BoxGeometry(0.30,0.07,0.62), def.id==='kr1'?redM:plastic); m.position.y = 0.345; g.add(m);
+      cylZ.forEach(z=>{ const c = new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.04,12), def.id==='kr1'?plastic:darkAlu); c.position.set(0,0.39,z); g.add(c); }); }
+    if (keys.has('pistons')){ const g = part('pistons',[0,0.25,0]); cylZ.forEach((z,i)=>{ const p = new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.07,24), steel); p.position.set(0,(i%3===0?0.06:-0.02),z); g.add(p);
+      const rod = new THREE.Mesh(new THREE.BoxGeometry(0.025,0.16,0.025), steel); rod.position.set(0,(i%3===0?-0.04:-0.12),z); g.add(rod); }); }
+    if (keys.has('crank')){ const g = part('crank',[0,-0.45,0]); const s = new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.78,16), steel); s.rotation.x = Math.PI/2; s.position.y = -0.2; g.add(s);
+      cylZ.forEach((z,i)=>{ const w = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.12,0.03), steel); w.position.set(0,-0.2+(i%3===0?0.04:-0.04),z); g.add(w); }); }
+    if (keys.has('intake')){ const g = part('intake',[-0.75,0.15,0]); const pl = new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.62,20), plastic); pl.rotation.x = Math.PI/2; pl.position.set(-0.36,0.26,0); g.add(pl);
+      cylZ.forEach(z=>{ const c = new THREE.CatmullRomCurve3([new THREE.Vector3(-0.36,0.26,z), new THREE.Vector3(-0.30,0.36,z), new THREE.Vector3(-0.19,0.28,z)]); g.add(new THREE.Mesh(new THREE.TubeGeometry(c,16,0.028,10), plastic)); }); }
+    if (keys.has('exhaust')){ const g = part('exhaust',[0.7,0,0]); cylZ.forEach(z=>{ const c = new THREE.CatmullRomCurve3([new THREE.Vector3(0.18,0.22,z), new THREE.Vector3(0.28,0.16,z*0.7), new THREE.Vector3(0.30,0.02,z*0.2), new THREE.Vector3(0.30,-0.06,0.12)]); g.add(new THREE.Mesh(new THREE.TubeGeometry(c,24,0.024,10), hot)); }); }
+    if (keys.has('turbo')){ const g = part('turbo',[1.2,-0.1,0.35]); const h = new THREE.Mesh(new THREE.TorusGeometry(0.075,0.04,16,32), hot); h.position.set(0.33,-0.08,0.2); g.add(h);
+      const c = new THREE.Mesh(new THREE.TorusGeometry(0.07,0.035,16,32), alu); c.position.set(0.33,-0.08,0.32); g.add(c);
+      const core = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.12,16), steel); core.rotation.x = Math.PI/2; core.position.set(0.33,-0.08,0.26); g.add(core); }
+    }
+    if (keys.has('ecvt')){ const g = part('ecvt',[0,0,-0.9]); const hs = new THREE.Mesh(new THREE.CylinderGeometry(0.21,0.21,0.30,36), alu); hs.rotation.x = Math.PI/2; hs.position.set(0,-0.03,-0.50); g.add(hs);
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.06,32), darkAlu); cap.rotation.x = Math.PI/2; cap.position.set(0,-0.03,-0.68); g.add(cap);
+      if (trim.kind==='hybrid'){ const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.3,10), orange); cable.position.set(0.1,0.2,-0.48); g.add(cable); } }
+    if (keys.has('pcu')){ const g = part('pcu',[0,0.9,-0.6]); const b = new THREE.Mesh(new THREE.BoxGeometry(0.32,0.13,0.36), darkAlu); b.position.set(0,0.30,-0.50); g.add(b);
+      const lid = new THREE.Mesh(new THREE.BoxGeometry(0.28,0.02,0.32), alu); lid.position.set(0,0.375,-0.50); g.add(lid); }
+    if (keys.has('pan') && !def.v12){ const g = part('pan',[0,-0.95,0]); const m = new THREE.Mesh(new THREE.BoxGeometry(0.34,0.10,0.60), darkAlu); m.position.y = -0.31; g.add(m); }
+    engine.traverse(o=>{ if (o.isMesh){ o.castShadow = true; let p=o; while (p && !(p.userData && p.userData.dir)) p = p.parent; o.userData.part = p ? p.userData.k : null; o.userData.baseMat = o.material; } });
+
+    const extras = [];
+    if (keys.has('battery')){
+      const b = new THREE.Group(); const m = new THREE.Mesh(new THREE.BoxGeometry(0.50,0.22,0.95), battM); b.add(m);
+      b.position.set(off+sh.axles[0]+0.58, 0.52, 0); b.visible = false; b.userData = {k:'battery'}; m.userData = {part:'battery', baseMat:battM}; group.add(b); partGroups.battery = b; extras.push(b);
+    }
+    let pack=null, motor=null;
+    if (def.id==='kr1'){
+      const pkL = (sh.axles[1]-sh.axles[0])-0.95; pack = new THREE.Mesh(new THREE.BoxGeometry(pkL, 0.12, 1.36), battM); pack.position.set(off+(sh.axles[0]+sh.axles[1])/2, 0.25, 0); pack.visible = false; group.add(pack);
+      motor = new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.42,32), new THREE.MeshStandardMaterial({color:0x6fb4e8, roughness:0.35, metalness:0.7}));
+      motor.rotation.x = Math.PI/2; motor.position.set(off+sh.axles[0], 0.36, 0); motor.visible = false; group.add(motor);
+    }
+    group.children.forEach(ch=>{ if (ch!==engine && ch!==pack && ch!==motor && !extras.includes(ch)) ch.userData.procBody = true; });
+    return { group, paint, mats, wheels, engine, engX, partGroups, extras, pack, motor, def, trim, sh };
+  }
+  // ---- chassis & underbody systems (illustrative layout, approximate positions) -------------------------------
+  function buildChassis(def, trim, sh){
+    const off = sh.off, L = sh.L, axF = sh.axles[1], axR = sh.axles[0], R = trim.R, Ra = sh.Ra, Rc = sh.Rc;
+    const trk = (trim.track || [1530,1530]).map(v=>v/2000), tf = trk[0]-0.01, trr = trk[1]-0.01;
+    const kind = trim.kind, ev = kind==='ev', hyb = kind==='hybrid', floorPack = !!trim.pack || ev;
+    const fw = Math.min(sh.g1 - 0.02, axF - 0.34);
+    const engX = def.mid ? axR+def.mid : def.rearEngine ? axR-0.32 : axF+0.08, es = def.engScale;
+    const xFD = def.doorLines[0], xRD = def.doorLines[def.doorLines.length-1], hasB = !!def.bPillar, xb = def.bPillar || xRD;
+    const root = new THREE.Group(); root.visible = false;
+    const mats = [];
+    const M = (color, o) => { const m = new THREE.MeshStandardMaterial(Object.assign({ color:new THREE.Color(color).convertSRGBToLinear(), roughness:0.5, metalness:0.5, side:THREE.DoubleSide }, o||{})); mats.push(m); return m; };
+    const biw = { uhss:M('#c8423f',{metalness:0.7, roughness:0.42}), ahss:M('#c9a24f',{metalness:0.7, roughness:0.42}), mild:M('#8a96a3',{metalness:0.7, roughness:0.45, transparent:true, opacity:0.9}) };
+    const mU = biw.uhss, mA = biw.ahss, mMild = biw.mild, mWeld = M('#eef1f3',{metalness:0.2, roughness:0.4, emissive:new THREE.Color('#3a3f44')});
+    const mArm = M('#b8bcc2',{metalness:0.8, roughness:0.35}), mSpring = M('#d8453f',{roughness:0.4}), mDamp = M('#3b3f45'), mSub = M('#6b7178'), mBush = M('#141517',{roughness:0.9, metalness:0});
+    const mSteer = M('#9fc4ff',{metalness:0.6, roughness:0.35}), mBrakeL = M('#d9a15f',{metalness:0.8, roughness:0.3}), mDisc = M('#8d9095',{metalness:0.9, roughness:0.3}), mCal = M(def.id==='kr1'?'#d9b25f':'#44484e');
+    const mTank = M('#4f8f5e',{roughness:0.6, metalness:0.2}), mFuel = M('#7fc28a',{metalness:0.5}), mExh = M('#a88466',{metalness:0.8, roughness:0.4}), mCat = M('#c9ccd1',{metalness:0.9, roughness:0.25});
+    const mShaft = M('#9ea4ab',{metalness:0.85, roughness:0.3}), mBoot = M('#16171a',{roughness:0.8, metalness:0}), mHV = M('#ff8a2b',{roughness:0.5, metalness:0.1}), mBat = M('#222428',{roughness:0.6});
+    const mRad = M('#4b5058',{metalness:0.6}), mHose = M('#1b1c1f',{roughness:0.8, metalness:0}), mRes = M('#dfe3e6',{transparent:true, opacity:0.7, roughness:0.3, metalness:0}), mFan = M('#2a2c30');
+    const mHarn = M('#5fc9b8',{roughness:0.6, metalness:0.1}), mEcu = M('#30353b',{metalness:0.6, roughness:0.4}), mAC = M('#a8d8e8',{metalness:0.8, roughness:0.3});
+    const V = (x,y,z) => new THREE.Vector3(off+x, y, z);
+    const layers = {}, groups = {}, parts = [];
+    CH_KEYS.forEach(k=>{ if (k==='engine' || k==='shell') return; const g = new THREE.Group(); root.add(g); layers[k] = g; });
+    const part = (layer, k, th, text, anchor) => { const g = new THREE.Group(); g.userData.k = k; layers[layer].add(g); groups[k] = g; parts.push({ k, layer, th, text, anchor }); return g; };
+    const add = (g, m) => { m.userData.chk = g.userData.k; m.userData.baseMat = m.material; g.add(m); return m; };
+    const tube = (g, pts, r, mat, seg) => add(g, new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.15), seg || Math.max(12, pts.length*14), r, 10, false), mat));
+    const UP = new THREE.Vector3(0,1,0);
+    const cyl = (g, a, b, r1, r2, mat) => { const d = b.clone().sub(a); const m = new THREE.Mesh(new THREE.CylinderGeometry(r2, r1, d.length(), 24), mat); m.position.copy(a).add(b).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(UP, d.normalize()); return add(g, m); };
+    const box = (g, c, sx, sy, sz, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), mat); m.position.copy(c); return add(g, m); };
+    const ball = (g, c, r, mat) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 10), mat); m.position.copy(c); return add(g, m); };
+    const spring = (g, a, b, rs, turns, mat) => {
+      const ax = b.clone().sub(a), len = ax.length(); ax.normalize();
+      const u = Math.abs(ax.y) > 0.9 ? new THREE.Vector3(1,0,0) : new THREE.Vector3(0,1,0);
+      const v1 = u.clone().cross(ax).normalize(), v2 = ax.clone().cross(v1), pts = [], N = turns*18;
+      for (let i=0;i<=N;i++){ const t = i/N, an = t*turns*Math.PI*2; pts.push(a.clone().addScaledVector(ax, t*len).addScaledVector(v1, Math.cos(an)*rs).addScaledVector(v2, Math.sin(an)*rs)); }
+      return add(g, new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), N*2, 0.01, 6, false), mat));
+    };
+    // stamped-steel profiles: [lateral, up] pairs, closed loops
+    const PROF = {
+      chamf:(w,h,c)=>[[-w/2+c,-h/2],[w/2-c,-h/2],[w/2,-h/2+c],[w/2,h/2-c],[w/2-c,h/2],[-w/2+c,h/2],[-w/2,h/2-c],[-w/2,-h/2+c]],
+      hat:(w,h,f)=>[[-w/2-f,-h/2],[-w/2,-h/2],[-w*0.38,h/2],[w*0.38,h/2],[w/2,-h/2],[w/2+f,-h/2],[w/2+f,-h/2-0.008],[-w/2-f,-h/2-0.008]]
+    };
+    // sweep a profile along a path; every profile edge gets its own vertices so stamped corners stay crisp
+    function sweep(g, pts, prof, mat, up){
+      const curve = pts.length > 2 ? new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.2) : new THREE.LineCurve3(pts[0], pts[1]);
+      const n = Math.max(2, Math.round(curve.getLength()/0.025)), P = curve.getSpacedPoints(n), m = prof.length, U = up || UP;
+      const rings = P.map((p,i)=>{
+        const T = curve.getTangentAt(Math.min(1, i/n)).normalize();
+        let u = U.clone(); if (Math.abs(T.dot(u)) > 0.97) u = Math.abs(T.y) < 0.9 ? new THREE.Vector3(0,1,0) : new THREE.Vector3(1,0,0);
+        const Nn = u.sub(T.clone().multiplyScalar(u.dot(T))).normalize(), B = new THREE.Vector3().crossVectors(T, Nn).normalize();
+        return prof.map(([a,b])=>p.clone().addScaledVector(B,a).addScaledVector(Nn,b));
+      });
+      const pos = [], idx = [];
+      for (let k=0;k<m;k++){ const k2 = (k+1)%m, base = pos.length/3;
+        rings.forEach(r=>pos.push(r[k].x,r[k].y,r[k].z, r[k2].x,r[k2].y,r[k2].z));
+        for (let i=0;i<n;i++){ const a = base+i*2; idx.push(a,a+1,a+2, a+1,a+3,a+2); } }
+      [0, n].forEach(i=>{ const base = pos.length/3, r = rings[i], c = r.reduce((s,v)=>s.add(v), new THREE.Vector3()).multiplyScalar(1/m);
+        pos.push(c.x,c.y,c.z); r.forEach(v=>pos.push(v.x,v.y,v.z)); for (let k=0;k<m;k++) idx.push(base, base+1+k, base+1+(k+1)%m); });
+      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); geo.setIndex(idx); geo.computeVertexNormals();
+      return add(g, new THREE.Mesh(geo, mat));
+    }
+    function gridSurf(g, nu, nv, fn, mat){
+      const pos = [], idx = [];
+      for (let i=0;i<=nu;i++) for (let j=0;j<=nv;j++){ const p = fn(i/nu, j/nv); pos.push(p.x,p.y,p.z); }
+      for (let i=0;i<nu;i++) for (let j=0;j<nv;j++){ const a = i*(nv+1)+j, c = a+nv+1; idx.push(a,c,a+1, a+1,c,c+1); }
+      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); geo.setIndex(idx); geo.computeVertexNormals();
+      return add(g, new THREE.Mesh(geo, mat));
+    }
+    const S = [1,-1];
+    const top = x => sh.top(x), hwAt = (x,y) => sh.hw(x,y);
+    const zs = x => Math.max(0.3, hwAt(x, sh.bot(x)+0.10) - 0.07);
+    const tankY = trim.pack ? 0.45 : 0.27, tankX = axR + 0.58;
+
+    // ---------- body-in-white: panels follow the car's own surface -------------------------------------------------
+    const deg = d => d*Math.PI/180, vb = 0.6;
+    const vB = d => (d+70)/115*vb, vG = d => vb + (d+15)/75*(1-vb);
+    const inGH = x => x > sh.g0+0.005 && x < sh.g1-0.005;
+    function sidePt(x, v, s, inset){
+      const p = (v <= vb || !inGH(x)) ? sh.bodyPt(x, deg(-70 + 115*Math.min(v,vb)/vb), -inset) : sh.ghPt(x, deg(-15 + 75*(v-vb)/(1-vb)), -inset);
+      return new THREE.Vector3(off+p[0], p[1], s*p[2]);
+    }
+    const welds = [];
+    // a stamped band on the body side, with an inner skin and closing walls so it reads as a closed box section
+    function band(g, s, x0, x1, v0f, v1f, depth, mat, opt){
+      opt = opt || {};
+      const nu = Math.max(3, Math.ceil(Math.abs(x1-x0)/0.025)), nv = opt.nv || 14, O = [], I = [];
+      for (let i=0;i<=nu;i++){ const x = x0+(x1-x0)*i/nu, a = v0f(x), b = v1f(x);
+        for (let j=0;j<=nv;j++){ const v = a+(b-a)*j/nv; O.push(sidePt(x,v,s,0.008)); I.push(sidePt(x,v,s,0.008+depth)); } }
+      const pos = [], idx = [], at = (i,j)=>i*(nv+1)+j;
+      const grid = G => { const base = pos.length/3; G.forEach(p=>pos.push(p.x,p.y,p.z)); for (let i=0;i<nu;i++) for (let j=0;j<nv;j++){ const a = base+at(i,j), c = base+at(i+1,j); idx.push(a,c,a+1, a+1,c,c+1); } };
+      grid(O); grid(I);
+      const e = [[],[],[],[]]; for (let i=0;i<=nu;i++){ e[0].push(at(i,0)); e[1].push(at(i,nv)); } for (let j=0;j<=nv;j++){ e[2].push(at(0,j)); e[3].push(at(nu,j)); }
+      e.forEach(list=>{ const base = pos.length/3; list.forEach(k=>{ const o = O[k], q = I[k]; pos.push(o.x,o.y,o.z, q.x,q.y,q.z); }); for (let k=0;k<list.length-1;k++){ const a = base+k*2; idx.push(a,a+1,a+2, a+1,a+3,a+2); } });
+      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); geo.setIndex(idx); geo.computeVertexNormals();
+      add(g, new THREE.Mesh(geo, mat));
+      (opt.weld||[]).forEach(w=>{ const list = e[w]; let acc = 0; for (let k=1;k<list.length;k++){ acc += O[list[k]].distanceTo(O[list[k-1]]); if (acc >= 0.05){ acc = 0; welds.push(O[list[k]].clone().lerp(I[list[k]], 0.12)); } } });
+    }
+    { const g = part('biw_side','side','โครงด้านข้าง (body side)','ธรณีประตู เสา A เสา B รางหลังคา และแผงข้างท้าย ขึ้นรูปจากเหล็กแผ่นหลายชั้นซ้อนกันแล้วเชื่อมเป็นกล่องปิด (box section) รถยุคนี้มักใช้เหล็กขึ้นรูปร้อนตรงเสาและธรณีเพื่อกันห้องโดยสารยุบเมื่อชนด้านข้างหรือพลิกคว่ำ ขอบช่องประตูคือแนวที่ยางขอบประตูทับ',
+        V(xb, sh.ghPt(xb, deg(40), 0)[1]+0.08, sh.ghPt(xb, deg(40), 0)[2]));
+      const xA1 = Math.min(xFD+0.11, sh.g1-0.006), xRail0 = Math.min(def.rgTop, xRD+0.02)-0.02;
+      S.forEach(s=>{
+        band(g, s, xRD, xFD, ()=>0, ()=>vB(-22), 0.13, mU, { weld:[1] });                       // sill / rocker
+        band(g, s, xFD-0.01, xFD+0.11, ()=>0, ()=>vb, 0.10, mA, { weld:[2] });                   // hinge pillar
+        band(g, s, def.wsTop-0.03, xA1, ()=>vG(28), ()=>vG(60), 0.07, mU, { weld:[0] });        // A pillar
+        band(g, s, xRail0, def.wsTop+0.01, ()=>vG(32), ()=>vG(60), 0.06, mU, { weld:[0] });     // roof side rail
+        if (hasB) band(g, s, xb-0.045, xb+0.045, ()=>vB(-30), ()=>vG(40), 0.08, mU, { weld:[2,3], nv:24 }); // B pillar
+        band(g, s, 0.14, xRD+0.01, ()=>0, x=>inGH(x) ? vG(60) : vB(45), 0.03, mMild, { weld:[3], nv:26 }); // quarter + C pillar
+      });
+    }
+    { const g = part('biw_roof','roof','คานหลังคา','คานขวางหน้า (header) กลาง และหลัง ยึดรางหลังคาสองข้างเข้าด้วยกันและรับแรงเมื่อรถพลิกคว่ำ ของจริงมีแผ่นหลังคาเชื่อมทับด้านบน ภาพนี้ซ่อนไว้เพื่อให้เห็นโครง');
+      [[def.wsTop+0.02, mU, 0.07],[(def.wsTop+def.rgTop)/2, mA, 0.045],[def.rgTop-0.01, mU, 0.06]].forEach(([x,mat,w])=>{
+        const pts = []; for (let d=50; d<=130; d+=5){ const p = sh.ghPt(x, deg(d), -0.03); pts.push(new THREE.Vector3(off+p[0], p[1], p[2])); }
+        sweep(g, pts, PROF.hat(w, 0.03, 0.012), mat, new THREE.Vector3(0,-1,0));
+      });
+    }
+    { const g = part('biw_floor','floor','พื้นรถ อุโมงค์กลาง และคานขวาง','แผ่นพื้นปั๊มร่องเสริมความแข็ง อุโมงค์กลางเป็นทางเดินของท่อไอเสียและท่อต่าง ๆ คานขวางรูปหมวกใต้เบาะหน้าและตรงเสา B ช่วยรับแรงชนด้านข้าง และยึดรางเบาะ', V(fw-0.7, 0.40, 0));
+      const x0 = axR+0.86, x1 = fw-0.14, zfl = x => zs(x)-0.04;
+      const floorY = (x,z) => { const az = Math.abs(z), t = Math.min(1, Math.max(0, (0.16-az)/0.07)); const bead = (az>0.22 && az<zfl(x)-0.05) ? 0.006*Math.max(0, Math.sin(x*Math.PI*2/0.16)) : 0; return 0.19 + bead + 0.16*t; };
+      gridSurf(g, Math.ceil((x1-x0)/0.02), 64, (u,w)=>{ const x = x0+(x1-x0)*u, zf = zfl(x), z = -zf+2*zf*w; return V(x, floorY(x,z), z); }, mMild);
+      [[fw-0.34, mA, 0.09],[xb, hasB?mU:mA, 0.10],[axR+0.86, mA, 0.09]].forEach(([x,mat,w])=>{
+        const zf = zfl(x), pts = []; for (let k=0;k<=16;k++){ const z = -zf+2*zf*k/16; pts.push(V(x, floorY(Math.min(Math.max(x,x0),x1), z)+0.035, z)); }
+        sweep(g, pts, PROF.hat(w, 0.06, 0.02), mat);
+      });
+    }
+    { const g = part('biw_front','bfront','โครงหน้าและห้องเครื่อง','คานหน้าวิ่งจากใต้พื้นขึ้นมาถึงหน้ารถ ปลายมีกล่องรับแรงชน (crash box) ทำร่องไว้ให้ยุบเป็นจังหวะ คานบนเหนือซุ้มล้อ (shotgun) รับแรงชนแบบเยื้องศูนย์ ซุ้มล้อด้านในกับหัวเสาโช้ครับน้ำหนักช่วงล่าง ผนังห้องเครื่องกั้นเสียงและความร้อนจากห้องโดยสาร', V(L-0.55, 0.62, 0.45));
+      const fwTop = top(fw)-0.03, fwz = hwAt(fw, 0.5)-0.05;
+      gridSurf(g, 24, 40, (t,w)=>{ const y = 0.19+(fwTop-0.19)*t, z = -fwz+2*fwz*w, tun = Math.min(1, Math.max(0,(0.16-Math.abs(z))/0.07))*(1-t)*0.16; return V(fw-0.14*Math.pow(1-t,2), y+tun*(1-t), z); }, mMild);
+      sweep(g, [V(fw+0.03,fwTop,-fwz), V(fw+0.03,fwTop+0.012,0), V(fw+0.03,fwTop,fwz)], PROF.chamf(0.11,0.07,0.015), mA);
+      S.forEach(s=>{
+        sweep(g, [V(fw-0.55,0.21,s*0.44), V(fw-0.15,0.22,s*0.45), V(fw+0.12,0.36,s*0.43), V(fw+0.35,0.42,s*0.42), V(L-0.33,0.42,s*0.42)], PROF.chamf(0.09,0.13,0.022), mA);
+        for (let k=0;k<6;k++) box(g, V(L-0.33+k*0.028+0.014, 0.42, s*0.42), 0.026, k%2?0.105:0.125, k%2?0.075:0.09, mA);
+        box(g, V(L-0.16, 0.44, s*0.42), 0.012, 0.18, 0.16, mA);
+        const hy = top(xFD)-0.12;
+        sweep(g, [V(xFD+0.05, hy, s*(hwAt(xFD, hy)-0.10)), V(axF-0.10, 0.75, s*(tf-0.05)), V(axF+0.35, 0.71, s*(tf-0.08)), V(L-0.38, 0.69, s*0.58)], PROF.chamf(0.05,0.08,0.012), mA);
+        const r = Ra+0.015, zc = s*(tf-0.10), hw = 0.10;
+        const shell = new THREE.Mesh(new THREE.CylinderGeometry(r, r, hw*2, 40, 1, true, Math.PI/2-0.15, Math.PI+0.3), mMild); shell.rotation.x = Math.PI/2; shell.position.set(off+axF, Rc, zc); add(g, shell);
+        const wall = new THREE.Mesh(new THREE.CircleGeometry(r, 40, -0.15, Math.PI+0.3), mMild); wall.position.set(off+axF, Rc, zc - s*hw); add(g, wall);
+        const tz = s*(tf-0.22);
+        cyl(g, V(axF-0.03, Rc+Ra-0.06, tz), V(axF-0.03, 0.78, tz), 0.13, 0.095, mMild);
+        const cap = new THREE.Mesh(new THREE.CircleGeometry(0.095, 28), mA); cap.rotation.x = -Math.PI/2; cap.position.copy(V(axF-0.03, 0.781, tz)); add(g, cap);
+        for (let k=0;k<3;k++){ const a = k*Math.PI*2/3; cyl(g, V(axF-0.03+Math.cos(a)*0.06, 0.78, tz+Math.sin(a)*0.06), V(axF-0.03+Math.cos(a)*0.06, 0.80, tz+Math.sin(a)*0.06), 0.009, 0.009, mSub); }
+      });
+      const xr = L-0.36;
+      sweep(g, [V(xr,0.72,-0.60), V(xr,0.74,0), V(xr,0.72,0.60)], PROF.chamf(0.06,0.07,0.012), mA);
+      sweep(g, [V(xr,0.30,-0.58), V(xr,0.30,0.58)], PROF.chamf(0.06,0.06,0.01), mA);
+      S.forEach(s=>sweep(g, [V(xr,0.30,s*0.56), V(xr,0.72,s*0.57)], PROF.chamf(0.06,0.05,0.01), mA, new THREE.Vector3(1,0,0)));
+      const f = []; for (let i=0;i<=8;i++){ const t = i/4-1; f.push(V(L-0.10-0.07*t*t, 0.44, t*0.74)); }
+      sweep(g, f, PROF.chamf(0.07,0.11,0.02), mA);
+    }
+    { const g = part('biw_rear','brear','โครงหลัง','คานหลังโค้งข้ามช่วงล่างหลังไปถึงท้ายรถ พื้นหลังยกสูงเหนือถังน้ำมัน ซุ้มล้อหลัง ชั้นวางของหลังเบาะ และคานท้ายรับแรงชนจากด้านหลัง', V(0.9, 0.62, 0));
+      S.forEach(s=>{
+        sweep(g, [V(axR+0.95,0.21,s*0.50), V(axR+0.45,0.28,s*0.52), V(axR+0.05,0.44,s*0.53), V(axR-0.40,0.45,s*0.53), V(0.20,0.44,s*0.53)], PROF.chamf(0.08,0.11,0.018), mA);
+        const r = Ra+0.015, zc = s*(trr-0.10), hw = 0.10;
+        const shell = new THREE.Mesh(new THREE.CylinderGeometry(r, r, hw*2, 40, 1, true, Math.PI/2-0.15, Math.PI+0.3), mMild); shell.rotation.x = Math.PI/2; shell.position.set(off+axR, Rc, zc); add(g, shell);
+        const wall = new THREE.Mesh(new THREE.CircleGeometry(r, 40, -0.15, Math.PI+0.3), mMild); wall.position.set(off+axR, Rc, zc - s*hw); add(g, wall);
+        cyl(g, V(axR, Rc+Ra-0.05, s*(trr-0.22)), V(axR, 0.66, s*(trr-0.22)), 0.10, 0.075, mMild);
+      });
+      const xk0 = axR+0.86, xk1 = axR+0.70;
+      gridSurf(g, 70, 48, (u,w)=>{ const x = xk0-(xk0-0.18)*u, zf = Math.min(zs(x)-0.04, 0.60), z = -zf+2*zf*w;
+        const y = (x > xk1 ? 0.19+(0.40-0.19)*(xk0-x)/(xk0-xk1) : 0.40) + 0.005*Math.max(0, Math.sin(z*Math.PI*2/0.18)); return V(x, y, z); }, mMild);
+      const xsh = sh.g0+0.02, ysh = top(xsh)-0.05;
+      gridSurf(g, 12, 30, (u,w)=>{ const x = xsh+0.32*u, zf = Math.max(0.3, hwAt(x, ysh-0.02)-0.07); return V(x, ysh, -zf+2*zf*w); }, mMild);
+      sweep(g, [V(xsh+0.02, ysh-0.03, -(hwAt(xsh, ysh-0.05)-0.08)), V(xsh+0.02, ysh-0.02, 0), V(xsh+0.02, ysh-0.03, hwAt(xsh, ysh-0.05)-0.08)], PROF.chamf(0.07,0.05,0.012), mA);
+      sweep(g, [V(0.16,0.60,-0.62), V(0.16,0.61,0), V(0.16,0.60,0.62)], PROF.chamf(0.06,0.09,0.015), mA);
+      const r = []; for (let i=0;i<=8;i++){ const t = i/4-1; r.push(V(0.12+0.06*t*t, 0.47, t*0.72)); }
+      sweep(g, r, PROF.chamf(0.07,0.11,0.02), mA);
+    }
+    if (welds.length){
+      const g = part('welds','welds','จุดเชื่อม (spot weld)','โครงตัวถังประกอบจากแผ่นเหล็กหลายร้อยชิ้น เชื่อมด้วยจุดเชื่อมไฟฟ้าหลายพันจุดตามขอบแผ่น ภาพนี้แสดงเฉพาะแนวรอบช่องประตูและเสา');
+      const im = new THREE.InstancedMesh(new THREE.SphereGeometry(0.0055, 6, 4), mWeld, welds.length), mx = new THREE.Matrix4();
+      welds.forEach((p,i)=>{ mx.makeTranslation(p.x,p.y,p.z); im.setMatrixAt(i, mx); });
+      add(g, im);
+    }
+
+    // ---------- suspension -------------------------------------------------------------------------------------------
+    { const g = part('susp_f','sfront','ช่วงล่างหน้า '+(def.frontSusp||'แม็คเฟอร์สันสตรัท'), def.frontSusp ? 'ปีกนกบนและล่างยึดดุมล้อ โช้คอัพกับสปริงวางนอนด้านในตัวถัง รับแรงผ่านก้านดัน (pushrod) และแขนโยก ช่วยลดน้ำหนักใต้สปริงและลดแรงลม ภาพนี้แสดงแบบย่อเป็นโครงแบบสตรัท' : 'โช้คอัพกับสปริงรวมเป็นแกนเดียว ด้านบนยึดหัวเสาโช้ค ด้านล่างยึดคอม้า ปีกนกล่างรูปตัว L ยึดกับซับเฟรมผ่านบูชยาง และต่อคอม้าด้วยลูกหมาก ซับเฟรมหน้ายังรับแร็คพวงมาลัยและจุดยึดเครื่องยนต์ด้วย', V(axF-0.03, 0.82, tf-0.22));
+      S.forEach(s=>{
+        box(g, V(axF, R, s*(tf-0.11)), 0.08, 0.24, 0.06, mDamp);
+        cyl(g, V(axF, R, s*(tf-0.10)), V(axF, R, s*(tf-0.03)), 0.065, 0.065, mSub);
+        const bj = V(axF, R-0.13, s*(tf-0.13)), pF = V(axF+0.12, 0.24, s*0.36), pR = V(axF-0.30, 0.24, s*0.34);
+        tube(g, [bj, pF], 0.022, mArm, 8); tube(g, [bj, pR], 0.024, mArm, 8); ball(g, bj, 0.03, mSub);
+        cyl(g, pF.clone().add(new THREE.Vector3(-0.04,0,0)), pF.clone().add(new THREE.Vector3(0.04,0,0)), 0.03, 0.03, mBush);
+        cyl(g, pR.clone().add(new THREE.Vector3(0,-0.03,0)), pR.clone().add(new THREE.Vector3(0,0.03,0)), 0.045, 0.045, mBush);
+        const d0 = V(axF-0.03, R+0.12, s*(tf-0.13)), tm = V(axF-0.03, 0.74, s*(tf-0.22));
+        cyl(g, d0, d0.clone().lerp(tm, 0.55), 0.03, 0.03, mDamp); cyl(g, d0.clone().lerp(tm, 0.55), tm, 0.012, 0.012, mCat);
+        spring(g, d0.clone().lerp(tm, 0.35), tm.clone().add(new THREE.Vector3(0,-0.03,0)), 0.075, 5, mSpring);
+        cyl(g, d0.clone().lerp(tm,0.33), d0.clone().lerp(tm,0.35), 0.095, 0.095, mSub);
+        cyl(g, tm, tm.clone().add(new THREE.Vector3(0,0.03,0)), 0.07, 0.07, mBush);
+      });
+      S.forEach(s=>sweep(g, [V(axF-0.45,0.22,s*0.33), V(axF-0.10,0.21,s*0.34), V(axF+0.22,0.23,s*0.33)], PROF.chamf(0.07,0.06,0.012), mSub));
+      [axF-0.42, axF+0.20].forEach(x=>sweep(g, [V(x,0.22,-0.37), V(x,0.21,0), V(x,0.22,0.37)], PROF.chamf(0.07,0.06,0.012), mSub));
+      const e = tf-0.20;
+      tube(g, [V(axF-0.04,0.34,-e), V(axF-0.20,0.27,-(e-0.05)), V(axF-0.26,0.25,-0.25), V(axF-0.26,0.25,0.25), V(axF-0.20,0.27,e-0.05), V(axF-0.04,0.34,e)], 0.014, mArm, 60);
+      S.forEach(s=>{ cyl(g, V(axF-0.04,0.34,s*e), V(axF-0.035, R+0.25, s*(tf-0.14)), 0.009, 0.009, mArm); cyl(g, V(axF-0.26,0.25,s*0.24), V(axF-0.26,0.25,s*0.18), 0.024, 0.024, mBush); });
+    }
+    { const ml = def.rearSusp!=='dw';
+      const g = part('susp_r','srear', ml?'ช่วงล่างหลัง มัลติลิงก์':'ช่วงล่างหลัง ดับเบิลวิชโบน',
+        (ml ? 'ใช้แขนหลายชิ้น ได้แก่ ปีกนกบน ปีกนกล่างที่รองสปริง ก้านคุมมุมโทอิน และแขนลาก คุมมุมล้อแยกกันแต่ละด้าน ล้อขยับอิสระ ให้ทั้งความนุ่มและการเกาะถนน'
+            : 'ปีกนกบนและปีกนกล่างรูปตัว A คุมมุมแคมเบอร์ของล้อขณะยุบตัว ทำงานร่วมกับแขนลากที่รับแรงตามแนวยาว ล้อแต่ละข้างขยับอิสระ')
+        + (def.rearStab(trim) ? (def.id==='altis' ? ' รุ่น GR Sport เพิ่มเหล็กกันโคลงหลังมาจากโรงงาน' : ' มีเหล็กกันโคลงหลังช่วยลดการเอียงของท้ายรถ') : ' รุ่นนี้ไม่มีเหล็กกันโคลงหลัง'), V(axR, 0.70, trr-0.22));
+      S.forEach(s=>{
+        const z = trr-0.11; box(g, V(axR, R, s*z), 0.10, 0.22, 0.06, mDamp);
+        cyl(g, V(axR, R, s*(trr-0.10)), V(axR, R, s*(trr-0.03)), 0.06, 0.06, mSub);
+        const arm = (a, b, r) => { tube(g, [a, b], r, mArm, 8); cyl(g, b.clone().add(new THREE.Vector3(-0.03,0,0)), b.clone().add(new THREE.Vector3(0.03,0,0)), r+0.012, r+0.012, mBush); };
+        if (ml){
+          arm(V(axR+0.02,R+0.13,s*z), V(axR+0.06,R+0.17,s*0.42), 0.018);
+          arm(V(axR,R-0.10,s*z), V(axR+0.02,0.23,s*0.36), 0.03);
+          arm(V(axR-0.12,R-0.06,s*z), V(axR-0.12,0.24,s*0.38), 0.016);
+        } else {
+          const u = V(axR,R+0.14,s*z), l = V(axR,R-0.11,s*z);
+          arm(u, V(axR+0.15,R+0.17,s*0.42), 0.018); arm(u, V(axR-0.12,R+0.17,s*0.42), 0.018);
+          arm(l, V(axR+0.18,0.23,s*0.36), 0.022); arm(l, V(axR-0.14,0.23,s*0.36), 0.022);
+          ball(g, u, 0.025, mSub); ball(g, l, 0.028, mSub);
+        }
+        tube(g, [V(axR+0.02,R-0.02,s*(z-0.01)), V(axR+0.25,0.27,s*(z-0.04)), V(axR+0.48,0.30,s*(trr-0.17))], 0.02, mArm, 20);
+        cyl(g, V(axR+0.46,0.30,s*(trr-0.17)), V(axR+0.52,0.30,s*(trr-0.17)), 0.04, 0.04, mBush);
+        spring(g, V(axR+0.02,0.25,s*(trr-0.30)), V(axR+0.02,0.52,s*(trr-0.30)), 0.065, 5, mSpring);
+        cyl(g, V(axR-0.08,R-0.06,s*(trr-0.13)), V(axR-0.09,0.40,s*(trr-0.165)), 0.028, 0.028, mDamp);
+        cyl(g, V(axR-0.09,0.40,s*(trr-0.165)), V(axR-0.10,0.62,s*(trr-0.20)), 0.011, 0.011, mCat);
+      });
+      S.forEach(s=>sweep(g, [V(axR-0.25,0.25,s*0.40), V(axR+0.30,0.25,s*0.40)], PROF.chamf(0.07,0.06,0.012), mSub));
+      [axR-0.22, axR+0.27].forEach(x=>sweep(g, [V(x,0.25,-0.43), V(x,0.24,0), V(x,0.25,0.43)], PROF.chamf(0.07,0.06,0.012), mSub));
+      if (def.rearStab(trim)){ const e = trr-0.22; tube(g, [V(axR+0.05,0.30,-e), V(axR-0.18,0.27,-(e-0.05)), V(axR-0.22,0.27,-0.30), V(axR-0.22,0.27,0.30), V(axR-0.18,0.27,e-0.05), V(axR+0.05,0.30,e)], 0.012, mArm, 60); }
+    }
+
+    // ---------- steering (right-hand drive: driver on +z) ------------------------------------------------------------
+    { const g = part('steer','rack','แร็คพวงมาลัยไฟฟ้า (EPS)','มอเตอร์ไฟฟ้าช่วยผ่อนแรงหมุน แร็คเปลี่ยนการหมุนของพวงมาลัยเป็นการเลื่อนซ้าย-ขวา แล้วส่งผ่านคันส่งไปยังคอม้าของล้อหน้า ยางกันฝุ่นสีดำหุ้มปลายแร็คสองข้าง รถที่ขายในไทยเป็นพวงมาลัยขวา');
+      const xr = axF-0.20;
+      cyl(g, V(xr,0.30,-0.30), V(xr,0.30,0.30), 0.03, 0.03, mSteer);
+      S.forEach(s=>{ cyl(g, V(xr,0.30,s*0.30), V(xr,0.30,s*0.40), 0.028, 0.02, mBoot); tube(g, [V(xr,0.30,s*0.40), V(axF-0.14,R+0.02,s*(tf-0.11))], 0.012, mSteer, 8); ball(g, V(axF-0.14,R+0.02,s*(tf-0.11)), 0.018, mSub); });
+      cyl(g, V(xr-0.08,0.33,0.16), V(xr+0.06,0.33,0.16), 0.05, 0.05, mDamp);
+      const swx = fw-0.52, swy = Math.min(top(swx)-0.10, 0.90);
+      tube(g, [V(xr,0.32,0.30), V(fw+0.04,0.48,0.33), V(fw-0.22,0.72,0.36), V(swx+0.05,swy-0.03,0.37)], 0.018, mSteer, 40);
+      const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.017, 10, 40), mSteer); wheel.position.copy(V(swx, swy, 0.37)); wheel.lookAt(V(swx-1, swy+0.5, 0.37)); add(g, wheel);
+    }
+
+    // ---------- brakes ------------------------------------------------------------------------------------------------
+    { const g = part('brake','brake','ระบบเบรก','แม่ปั๊มเบรกหลังผนังห้องเครื่องสร้างแรงดันน้ำมันเบรก ผ่านชุด ABS และระบบควบคุมการทรงตัว แล้วไปตามท่อเบรกถึงคาลิปเปอร์ทั้ง 4 ล้อ'+(hyb||ev?' รถไฮบริดและไฟฟ้าใช้มอเตอร์หน่วงความเร็วและชาร์จไฟคืนก่อน แล้วค่อยใช้ผ้าเบรก':'')+' ภาพจำลองแสดงดิสก์เบรกทั้ง 4 ล้อ', V(fw+0.28, 0.64, 0.58));
+      [[axF,tf,0.025],[axR,trr,0.012]].forEach(([x,t,th])=>S.forEach(s=>{
+        cyl(g, V(x,R,s*(t-0.075)), V(x,R,s*(t-0.075+th)), trim.rimR*0.72, trim.rimR*0.72, mDisc);
+        cyl(g, V(x,R,s*(t-0.08)), V(x,R,s*(t-0.045)), 0.07, 0.07, mSub);
+        box(g, V(x-trim.rimR*0.55, R+0.06, s*(t-0.065)), 0.07, 0.15, 0.07, mCal);
+      }));
+      const my = top(fw)-0.17;
+      cyl(g, V(fw+0.01,my,0.36), V(fw+0.04,my,0.36), 0.11, 0.11, mDamp);
+      cyl(g, V(fw+0.04,my,0.36), V(fw+0.20,my,0.36), 0.035, 0.035, mCal);
+      box(g, V(fw+0.12,my+0.06,0.36), 0.08, 0.05, 0.06, mRes);
+      const abs = V(fw+0.28, 0.56, 0.58); box(g, abs, 0.12, 0.10, 0.10, mSub);
+      const r = 0.007;
+      tube(g, [V(fw+0.20,my,0.36), V(fw+0.26,my-0.02,0.50), abs], r, mBrakeL, 16);
+      tube(g, [abs, V(axF-0.10,0.58,tf-0.20), V(axF-0.06,R+0.12,tf-0.10)], r, mBrakeL, 20);
+      tube(g, [abs, V(fw+0.30,0.62,0.0), V(fw+0.28,0.60,-(tf-0.25)), V(axF-0.10,0.58,-(tf-0.20)), V(axF-0.06,R+0.12,-(tf-0.10))], r, mBrakeL, 40);
+      tube(g, [abs, V(fw+0.10,0.40,0.50), V(fw-0.10,0.21,0.30), V(axR+0.95,0.21,0.28), V(axR+0.20,0.28,0.30)], r, mBrakeL, 50);
+      S.forEach(s=>tube(g, [V(axR+0.20,0.28,0.30), V(axR+0.08,0.30,s*0.40), V(axR-0.05,R+0.10,s*(trr-0.10))], r, mBrakeL, 20));
+    }
+
+    // ---------- fuel & exhaust --------------------------------------------------------------------------------------
+    if (!ev && def.rearEngine){
+      // rear-engined layout: fuel cell up front, very short exhaust at the tail
+      if (def.mid){
+      const tx = engX+0.55;
+      const g = part('fuel','tank','ถังน้ำมัน '+def.fuelL+' ลิตร','ถังน้ำมันวางกลางรถหลังเบาะ คร่อมอุโมงค์เกียร์ ใกล้จุดศูนย์ถ่วงที่สุด น้ำหนักน้ำมันที่ลดลงระหว่างขับจึงแทบไม่เปลี่ยนสมดุลรถ ตำแหน่งในโมเดลเป็นแบบประมาณ');
+      S.forEach(sd=>box(g, V(tx, 0.36, sd*0.36), 0.30, 0.30, 0.34, mTank)); box(g, V(tx, 0.56, 0), 0.26, 0.10, 0.40, mTank);
+      cyl(g, V(tx, 0.61, 0.10), V(tx, 0.64, 0.10), 0.06, 0.06, mDamp);
+      const g2 = part('fuel','fuelline','ท่อน้ำมันและระบบไอระเหย (EVAP)','ท่อน้ำมันสั้นมากเพราะถังอยู่ติดกับเครื่อง V12 วิ่งจากถังไปยังรางหัวฉีดสองแถวบนเครื่อง ไอน้ำมันจากถังเก็บในกระป๋องถ่านกัมมันต์แล้วดูดกลับไปเผา', V(tx-0.30, 0.66, 0.20));
+      S.forEach(sd=>{ tube(g2, [V(tx-0.12, 0.40, sd*0.30), V(engX+0.30, 0.50, sd*0.24), V(engX, 0.78, sd*0.16)], 0.007, mFuel, 40); cyl(g2, V(engX-0.36, 0.78, sd*0.16), V(engX+0.36, 0.78, sd*0.16), 0.011, 0.011, mFuel); });
+      cyl(g2, V(tx-0.05, 0.30, -0.62), V(tx+0.15, 0.30, -0.62), 0.05, 0.05, mDamp);
+      } else {
+      const tx = axF+0.25, ty = 0.40;
+      const g = part('fuel','tank','ถังน้ำมัน '+def.fuelL+' ลิตร','รถเครื่องวางท้ายย้ายถังน้ำมันไปไว้ด้านหน้าเลยล้อหน้า ช่วยถ่วงน้ำหนักหน้า-หลังให้สมดุล ฝาเติมอยู่บนฝากระโปรงหน้าแบบรถแข่ง มีปั๊มเชื้อเพลิงอยู่ในถัง (ค่าสมมติ)');
+      box(g, V(tx, ty, 0), 0.40, 0.24, 0.80, mTank);
+      cyl(g, V(tx, ty+0.12, -0.18), V(tx, ty+0.145, -0.18), 0.06, 0.06, mDamp);
+      const yh = top(tx+0.10)-0.01;
+      tube(g, [V(tx+0.08, ty+0.12, 0.22), V(tx+0.10, yh-0.08, 0.26), V(tx+0.10, yh, 0.27)], 0.022, mTank, 16);
+      cyl(g, V(tx+0.10, yh-0.006, 0.27), V(tx+0.10, yh+0.012, 0.27), 0.05, 0.05, mCat);
+      const g2 = part('fuel','fuelline','ท่อน้ำมันและระบบไอระเหย (EVAP)','ท่อส่งน้ำมันวิ่งจากถังด้านหน้า ผ่านอุโมงค์กลางใต้พื้นรถ ไปถึงรางหัวฉีดของเครื่องยนต์ด้านท้าย ไอน้ำมันจากถังเก็บในกระป๋องถ่านกัมมันต์แล้วดูดกลับไปเผาในเครื่องยนต์', V(fw-0.8, 0.30, 0.10));
+      tube(g2, [V(tx-0.20, ty-0.06, 0.10), V(fw-0.20, 0.26, 0.10), V(axR+0.70, 0.26, 0.10), V(engX+0.25, 0.45, 0.10), V(engX, 0.70, 0.12)], 0.007, mFuel, 90);
+      cyl(g2, V(engX-0.27, 0.70, 0.12), V(engX+0.27, 0.70, 0.12), 0.012, 0.012, mFuel);
+      cyl(g2, V(tx-0.12, ty-0.06, -0.34), V(tx-0.12, ty-0.06, -0.14), 0.055, 0.055, mDamp);
+      tube(g2, [V(tx-0.12, ty-0.06, -0.14), V(fw-0.20, 0.26, 0.16), V(axR+0.70, 0.26, 0.16), V(engX+0.20, 0.60, 0.18)], 0.006, mFuel, 80);
+      }
+
+      const g3 = part('exh','cat','แคตาไลติกคอนเวอร์เตอร์','ติดท้ายท่อร่วมไอเสียทั้งสองฝั่งเพื่อให้ร้อนถึงอุณหภูมิทำงานเร็ว เปลี่ยน CO, HC และ NOx ในไอเสียให้เป็นก๊าซที่เป็นพิษน้อยลง มีเซ็นเซอร์ออกซิเจนคอยวัดผล');
+      S.forEach(s=>{ const c0 = V(engX-0.05, 0.32, s*0.22), c1 = V(engX-0.25, 0.28, s*0.20);
+        tube(g3, [V(engX+0.10, 0.42, s*0.18), c0], 0.028, mExh, 10); cyl(g3, c0, c1, 0.06, 0.06, mCat);
+        cyl(g3, c0.clone().add(new THREE.Vector3(0,0.06,0)), c0.clone().add(new THREE.Vector3(0,0.12,0.02*s)), 0.009, 0.009, mSub); });
+      const g4 = part('exh','muffler','ท่อไอเสียและหม้อพักท้าย',(def.mid?'เครื่องวางกลางลำอยู่ใกล้ท้ายรถ':'เครื่องวางท้าย')+'ทำให้ท่อไอเสียสั้นมาก ไอเสียจากสองฝั่งผ่านแคตแล้วรวมเข้าหม้อพักท้ายที่วางขวางตัวรถ ก่อนออกปลายท่อคู่ตรงกลางแบบรถแข่ง', V(0.26, 0.46, 0));
+      S.forEach(s=>tube(g4, [V(engX-0.25, 0.28, s*0.20), V(engX-0.40, 0.28, s*0.16), V(0.36, 0.30, s*0.12)], 0.028, mExh, 20));
+      box(g4, V(0.26, 0.32, 0), 0.20, 0.16, 0.70, mExh);
+      S.forEach(s=>cyl(g4, V(0.16, 0.34, s*0.08), V(0.02, 0.35, s*0.08), 0.035, 0.035, mCat));
+    }
+    if (!ev && !def.rearEngine){
+      const g = part('fuel','tank','ถังน้ำมัน '+def.fuelL+' ลิตร','วางใต้เบาะหลังหน้าเพลาหลัง ซึ่งเป็นจุดที่ปลอดภัยจากการชน มีปั๊มเชื้อเพลิงอยู่ในถัง ท่อเติมวิ่งจากฝาถังข้างรถลงมาที่ถัง'+(def.id==='kr1'?' (ค่าสมมติ)':'')+' ตำแหน่งในโมเดลเป็นแบบประมาณ');
+      box(g, V(tankX, tankY, 0.10), 0.50, 0.21, 0.72, mTank);
+      S.forEach(s=>box(g, V(tankX+s*0.15, tankY-0.108, 0.10), 0.03, 0.006, 0.80, mSub));
+      cyl(g, V(tankX, tankY+0.105, 0.20), V(tankX, tankY+0.13, 0.20), 0.06, 0.06, mDamp);
+      const xf = axR-0.12, yf = top(xf)-0.15, zf = -(hwAt(xf, yf)-0.02);
+      tube(g, [V(tankX-0.18, tankY+0.07, -0.22), V(axR+0.20, tankY+0.17, -0.42), V(axR-0.02, 0.58, -0.62), V(xf, yf, zf+0.06)], 0.022, mTank, 30);
+      cyl(g, V(xf, yf, zf+0.03), V(xf, yf, zf-0.005), 0.045, 0.045, mDamp);
+      const g2 = part('fuel','fuelline','ท่อน้ำมันและระบบไอระเหย (EVAP)','ท่อส่งน้ำมันวิ่งใต้พื้นรถไปยังรางหัวฉีดบนเครื่องยนต์ ไอน้ำมันจากถังถูกเก็บในกระป๋องถ่านกัมมันต์ (EVAP canister) แล้วดูดกลับไปเผาในเครื่องยนต์ ไม่ปล่อยออกสู่อากาศ', V(fw-0.8, 0.24, 0.16));
+      const railX = engX - 0.30*es;
+      tube(g2, [V(tankX+0.25, tankY-0.01, 0.16), V(fw-0.20,0.21,0.16), V(fw+0.04,0.36,0.18), V(railX,0.62,0.22), V(railX,0.64,0.10)], 0.007, mFuel, 60);
+      cyl(g2, V(railX,0.64,-0.27), V(railX,0.64,0.27), 0.012, 0.012, mFuel);
+      cyl(g2, V(axR+0.95,0.26,0.36), V(axR+1.17,0.26,0.36), 0.055, 0.055, mDamp);
+      tube(g2, [V(tankX+0.25, tankY+0.03, 0.30), V(axR+0.95,0.26,0.36)], 0.006, mFuel, 8);
+      tube(g2, [V(axR+1.17,0.26,0.36), V(fw-0.20,0.21,0.20), V(fw+0.04,0.38,0.22), V(engX-0.36*es,0.75,0.20)], 0.006, mFuel, 60);
+
+      const g3 = part('exh','cat','แคตาไลติกคอนเวอร์เตอร์','อยู่ใกล้ท่อร่วมไอเสียเพื่อให้ร้อนถึงอุณหภูมิทำงานเร็ว เปลี่ยน CO, HC และ NOx ในไอเสียให้เป็นก๊าซที่เป็นพิษน้อยลง มีเซ็นเซอร์ออกซิเจนก่อนและหลังแคตคอยวัดผล');
+      const e0 = V(engX+0.27*es, 0.52-0.06*es, 0.11*es), c0 = V(engX+0.29, 0.40, 0.08), c1 = V(engX+0.25, 0.24, 0.03);
+      tube(g3, [e0, c0], 0.03, mExh, 8); cyl(g3, c0, c1, 0.065, 0.065, mCat);
+      [c0, c1].forEach(p=>cyl(g3, p.clone().add(new THREE.Vector3(0.05,0,0)), p.clone().add(new THREE.Vector3(0.11,0.02,0)), 0.009, 0.009, mSub));
+      const g4 = part('exh','muffler','ท่อไอเสีย ท่อพักกลาง และหม้อพักท้าย','ท่อไอเสียวิ่งใต้อุโมงค์กลางของพื้นรถ ผ่านท่อพักกลางเพื่อลดเสียงก้อง เบี่ยงหลบถังน้ำมัน แล้วเข้าหม้อพักท้ายก่อนออกปลายท่อ แขวนกับตัวถังด้วยยางแขวนท่อหลายจุด', V(0.42, 0.42, -0.08));
+      const xm0 = axR+1.30, xm1 = axR+0.95;
+      tube(g4, [c1, V(engX+0.12,0.17,0.0), V(fw,0.19,0.0), V(xm0+0.02,0.20,0.0)], 0.028, mExh, 60);
+      cyl(g4, V(xm0,0.20,0), V(xm1,0.20,0), 0.06, 0.06, mExh);
+      tube(g4, [V(xm1,0.20,0), V(axR+0.86,0.20,-0.20), V(axR+0.60,0.20,-0.36), V(axR+0.10,0.24,-0.34), V(axR-0.30,0.30,-0.30), V(0.58,0.30,-0.25)], 0.028, mExh, 60);
+      box(g4, V(0.42,0.30,-0.08), 0.28, 0.17, 0.62, mExh);
+      tube(g4, [V(0.30,0.28,-0.36), V(0.14,0.27,-0.44), V(0.05,0.27,-0.46)], 0.03, mCat, 16);
+      [[fw-0.4,0.23,0.03],[axR+0.20,0.27,-0.34],[0.50,0.40,-0.30]].forEach(([x,y,z])=>cyl(g4, V(x,y,z), V(x,y+0.06,z), 0.012, 0.012, mBush));
+    }
+
+    // ---------- driveline -----------------------------------------------------------------------------------------------
+    { const g = part('drive','shafts', def.awd ? 'ระบบขับสี่ล้อ เพลากลางและเพลาขับ' : (ev||def.rearEngine) ? 'เพลาขับหลังและข้อต่อ CV' : 'เพลาขับหน้าและข้อต่อ CV',
+        def.awd ? 'เกียร์ ISR อยู่หน้าเครื่องในอุโมงค์กลางรถ กำลังส่วนใหญ่ไปล้อหลังผ่านเฟืองท้ายใต้เครื่อง และมีเพลากลางวิ่งไปข้างหน้าถึงคลัตช์ Haldex กับเฟืองหน้า ระบบแบ่งแรงบิดไปล้อหน้าได้ตามการยึดเกาะ ข้อต่อ CV ทำให้ล้อเลี้ยวและยุบตัวได้ขณะส่งกำลัง'
+        : ev ? 'มอเตอร์ที่เพลาหลังส่งกำลังผ่านเพลาขับไปยังล้อหลังโดยตรง ข้อต่อ CV ทำให้ล้อยุบตัวได้ขณะส่งกำลัง'
+        : def.rearEngine ? 'เครื่องวางท้ายเลยเพลาหลัง เกียร์อยู่ด้านหน้าเครื่อง ส่งกำลังผ่านเพลาขับซ้าย-ขวาไปยังล้อหลัง ข้อต่อ CV ทำให้ล้อยุบตัวได้ขณะส่งกำลัง'
+           : 'เกียร์ติดกับเครื่องยนต์และส่งกำลังผ่านเพลาขับซ้าย-ขวาไปยังล้อหน้า ข้อต่อความเร็วคงที่ (CV) ที่หุ้มยางกันฝุ่นสีดำ ทำให้ล้อเลี้ยวและยุบตัวได้ขณะส่งกำลัง',
+        (ev||def.rearEngine) ? V(axR, R+0.08, -(trr-0.35)) : V(axF, R+0.08, -(tf-0.35)));
+      const pairs = ev ? [[V(axR+0.02,R,-0.12), V(axR,R,-(trr-0.12))], [V(axR+0.02,R,0.12), V(axR,R,trr-0.12)]]
+                       : def.rearEngine ? [[V(axR+0.08,R+0.02,-0.16), V(axR,R,-(trr-0.12))], [V(axR+0.08,R+0.02,0.16), V(axR,R,trr-0.12)]]
+                       : [[V(engX-0.06,R+0.02,-0.30), V(axF,R,-(tf-0.12))], [V(engX-0.06,R+0.02,-0.18), V(axF,R,tf-0.12)]];
+      if (def.awd){ pairs.push([V(axF,R+0.02,-0.14), V(axF,R,-(tf-0.12))], [V(axF,R+0.02,0.14), V(axF,R,tf-0.12)]);
+        cyl(g, V(engX+0.95,0.30,0), V(axF-0.14,R+0.02,0), 0.032, 0.032, mShaft); box(g, V(axF,R+0.02,0), 0.24, 0.18, 0.26, mSub); }
+      pairs.forEach(([a,b])=>{ cyl(g, a, b, 0.021, 0.021, mShaft); const d = b.clone().sub(a).normalize();
+        [[a, a.clone().addScaledVector(d,0.10), 0.05, 0.028],[b.clone().addScaledVector(d,-0.10), b, 0.028, 0.05]].forEach(([p,q,r1,r2])=>{ for (let k=0;k<4;k++){ const t0 = k/4, t1 = (k+1)/4; cyl(g, p.clone().lerp(q,t0), p.clone().lerp(q,t1), r1+(r2-r1)*t0 + (k%2?0:0.006), r1+(r2-r1)*t1, mBoot); } }); });
+    }
+
+    // ---------- electrical ---------------------------------------------------------------------------------------------
+    const b12 = V(axF+0.30, 0.64, 0.50), fuse = V(axF+0.08, 0.72, 0.30), bcm = V(fw-0.32, 0.64, 0.22);
+    { const g = part('elec','b12','แบตเตอรี่ 12V และกล่องฟิวส์', 'แบตเตอรี่ 12V จ่ายไฟให้ระบบทั่วไป กล่องฟิวส์และรีเลย์ในห้องเครื่องกระจายไฟไปยังวงจรต่าง ๆ พร้อมฟิวส์ป้องกันแต่ละวงจร'
+        + (hyb ? ' รุ่นไฮบริดไม่มีไดชาร์จแบบเดิม ใช้ตัวแปลงไฟ DC-DC ในชุดควบคุมกำลังชาร์จแบต 12V และใช้มอเตอร์ของระบบไฮบริดติดเครื่องแทนไดสตาร์ท'
+           : ev ? ' รถไฟฟ้าชาร์จแบต 12V จากแบตเตอรี่แรงสูงผ่านตัวแปลงไฟ DC-DC (ค่าสมมติ)'
+           : ' ไดชาร์จที่หัวเครื่องหมุนด้วยสายพานเพื่อชาร์จไฟกลับ และมอเตอร์สตาร์ทหมุนเครื่องตอนติดเครื่อง'), V(axF+0.30, 0.78, 0.50));
+      box(g, b12, 0.24, 0.18, 0.17, mBat);
+      [[0.06,'#c8423f'],[-0.06,'#2a2c30']].forEach(([dz,c])=>{ const m = M(c,{metalness:0.3}); cyl(g, V(axF+0.24,0.73,0.50+dz), V(axF+0.24,0.755,0.50+dz), 0.012, 0.012, m); });
+      box(g, fuse, 0.20, 0.09, 0.14, mEcu);
+      tube(g, [V(axF+0.24,0.755,0.56), V(axF+0.16,0.78,0.42), fuse.clone().add(new THREE.Vector3(0,0.05,0))], 0.009, mHose, 20);
+      tube(g, [V(axF+0.24,0.755,0.44), V(axF+0.20,0.70,0.62), V(axF+0.10,0.60,hwAt(axF+0.10,0.60)-0.12)], 0.008, mHose, 20);
+      if (kind==='na' || kind==='turbo'){ cyl(g, V(engX+0.22,0.42,0.16), V(engX+0.22,0.42,0.30), 0.07, 0.07, mSub); cyl(g, V(engX-0.16,0.36,-0.26), V(engX-0.02,0.36,-0.26), 0.045, 0.045, mSub); }
+    }
+    { const g = part('harness','harness','ชุดสายไฟหลัก (wiring harness)','สายไฟรวมเป็นมัดวิ่งจากกล่องฟิวส์ ผ่านยางกันน้ำที่ผนังห้องเครื่อง ไปตามธรณีด้านใน แล้วแยกไปประตู หลังคา ไฟหน้า และไฟท้าย สายไฟทั้งคันของรถยุคนี้ยาวรวมกันได้ระดับกิโลเมตร ภาพนี้แสดงเฉพาะเส้นหลัก', V(xb, 0.52, zs(xb)-0.06));
+      const zi = x => zs(x)-0.12, ys = sh.bot((axR+axF)/2)+0.22;
+      tube(g, [fuse, V(fw+0.10,0.70,0.40), V(fw,0.66,0.40), bcm, V(xFD-0.15,ys+0.05,zi(xFD)), V(xb,ys,zi(xb)), V(xRD,ys,zi(xRD)), V(axR+0.30,0.58,0.55), V(sh.g0+0.10,0.70,0.55), V(0.30,0.80,0.55), V(0.10,0.84,0.60)], 0.014, mHarn, 160);
+      tube(g, [V(0.30,0.80,0.55), V(0.22,0.66,0.0), V(0.30,0.80,-0.55), V(0.10,0.84,-0.60)], 0.01, mHarn, 60);
+      const yh1 = Math.min(0.76, top(L-0.38)-0.10), yh2 = Math.min(0.70, top(L-0.14)-0.10);
+      tube(g, [fuse, V(axF+0.30,Math.min(0.74,top(axF+0.30)-0.08),0.20), V(L-0.38,yh1,0.30), V(L-0.14,yh2,0.60)], 0.011, mHarn, 60);
+      tube(g, [V(L-0.38,yh1,0.30), V(L-0.38,yh1+0.01,-0.30), V(L-0.14,yh2,-0.60)], 0.01, mHarn, 50);
+      if (def.rearEngine) tube(g, [fuse, V(fw+0.05,0.60,0.45), V(fw-0.10,ys,zi(fw-0.10)), V(xRD,ys,zi(xRD)), V(axR+0.20,0.45,0.45), V(engX+0.10,0.80,0.10)], 0.01, mHarn, 90);
+      else tube(g, [fuse, V(engX,0.84,0.10), V(engX-0.10,0.84,-0.20)], 0.01, mHarn, 30);
+      const aTop = sh.ghPt(def.wsTop, deg(55), -0.05);
+      tube(g, [bcm, V(xFD-0.05,top(xFD)-0.05,zi(xFD)+0.05), V(def.wsTop, aTop[1]-0.02, aTop[2]-0.08), V(def.wsTop-0.15, aTop[1]+0.01, 0)], 0.008, mHarn, 50);
+      S.forEach(s=>{ tube(g, [V(xFD-0.08,0.62,s*zi(xFD)), V(xFD-0.02,0.62,s*(zi(xFD)+0.10))], 0.009, mHarn, 8); if (hasB) tube(g, [V(xb,ys,s*zi(xb)), V(xb-0.03,0.60,s*(zi(xb)+0.10))], 0.009, mHarn, 10); });
+      tube(g, [V(xFD-0.15,ys+0.05,zi(xFD)), V(xFD-0.15,ys+0.05,-zi(xFD))], 0.008, mHarn, 30);
+    }
+    { const g = part('ecu','ecu','กล่องควบคุม (ECU, BCM, ถุงลม)','กล่องควบคุมเครื่องยนต์อยู่ในห้องเครื่อง กล่องควบคุมตัวถัง (BCM) อยู่หลังแผงหน้าปัด สั่งงานไฟ กระจก และล็อกประตู กล่องควบคุมถุงลมอยู่กลางรถบนอุโมงค์ ทุกกล่องคุยกันผ่านเครือข่าย CAN'+(hyb?' รุ่นไฮบริดมีกล่องควบคุมแบตเตอรี่แยกอีกชุด':''), V(fw-0.32, 0.72, 0.22));
+      box(g, V(fw+0.14, 0.76, -0.45), 0.18, 0.04, 0.14, mEcu);
+      box(g, bcm, 0.20, 0.10, 0.16, mEcu);
+      box(g, V(fw-0.50, 0.37, 0), 0.14, 0.05, 0.12, mEcu);
+      if (hyb) box(g, V(tankX+0.08, 0.66, -0.28), 0.12, 0.04, 0.10, mEcu);
+    }
+    if (hyb || floorPack){
+      const g = part('hv','hv','ระบบไฟฟ้าแรงสูง', hyb ? 'สายสีส้มคือสายไฟแรงสูงจากแบตเตอรี่ไฮบริดใต้เบาะหลัง วิ่งใต้พื้นรถไปยังชุดควบคุมกำลังในห้องเครื่อง ปลั๊กตัดไฟ (service plug) บนแบตใช้ตัดวงจรก่อนซ่อม แบตมีพัดลมเป่าระบายความร้อน'
+        : 'สายสีส้มคือสายไฟแรงสูงจากแบตเตอรี่ใต้พื้นรถไปยัง'+(ev?'มอเตอร์ที่เพลาหลัง':'ระบบไฮบริดในห้องเครื่อง')+' (ค่าสมมติ)');
+      if (hyb){
+        [-0.16,-0.20].forEach(z=>tube(g, [V(tankX+0.26,0.46,z-0.10), V(tankX+0.40,0.21,z), V(fw-0.20,0.21,z), V(fw+0.05,0.40,z-0.08), V(engX-0.05,0.70,-0.40)], 0.011, mHV, 70));
+        box(g, V(tankX, 0.645, 0.30), 0.08, 0.03, 0.06, mHV);
+        cyl(g, V(tankX+0.26,0.52,0.30), V(tankX+0.34,0.52,0.30), 0.05, 0.05, mFan);
+      } else {
+        [-0.16,-0.20].forEach(z=>tube(g, (ev||def.rearEngine) ? [V((axR+axF)/2-((axF-axR)-0.95)/2,0.25,z), V(axR+0.06,0.30,z), ev ? V(axR+0.02,0.40,z*0.5) : V(engX+0.05,0.55,-0.25)] : [V((axR+axF)/2+((axF-axR)-0.95)/2,0.25,z), V(fw-0.10,0.26,z), V(fw+0.05,0.42,z-0.08), V(engX-0.05,0.62,-0.30)], 0.011, mHV, 40));
+      }
+    }
+
+    // ---------- cooling & air conditioning --------------------------------------------------------------------------
+    const xr = L-0.43;
+    { const g = part('cool','radiator','หม้อน้ำและระบบระบายความร้อน', def.sideRad ? 'หม้อน้ำสองชุดวางด้านข้างหน้าล้อหลัง รับลมจากช่องดักลมข้างตัวรถ ท่อน้ำหล่อเย็นจึงสั้นเพราะอยู่ติดเครื่อง V12 มีพัดลมไฟฟ้าช่วยดูดลมตอนรถวิ่งช้า' : ev ? 'หม้อน้ำหน้ารถระบายความร้อนให้มอเตอร์ อินเวอร์เตอร์ และแบตเตอรี่'
+        : 'น้ำหล่อเย็นวนจากเครื่องยนต์มาคายความร้อนที่หม้อน้ำหน้ารถ มีพัดลมไฟฟ้าช่วยดูดลม ถังพักน้ำอยู่ข้างห้องเครื่อง'+(hyb?' รุ่นไฮบริดมีวงจรน้ำหล่อเย็นแยกสำหรับชุดควบคุมกำลังด้วย':''));
+      if (def.sideRad) S.forEach(s=>{ const rx = axR+def.mid+0.34; box(g, V(rx,0.60,s*0.78), 0.46, 0.34, 0.04, mRad); cyl(g, V(rx,0.60,s*0.75), V(rx,0.60,s*0.70), 0.14, 0.14, mFan);
+        tube(g, [V(rx-0.20,0.50,s*0.74), V(engX,0.40,s*0.46), V(engX-0.10,0.48,s*0.26)], 0.02, mHose, 30); tube(g, [V(rx+0.20,0.70,s*0.74), V(engX+0.25,0.62,s*0.42), V(engX+0.20,0.62,s*0.24)], 0.02, mHose, 30); });
+      else { box(g, V(xr,0.50,0), 0.035, 0.34, 0.92, mRad);
+      S.forEach(s=>{ box(g, V(xr,0.50,s*0.49), 0.05, 0.38, 0.05, mFan); cyl(g, V(xr-0.035,0.50,s*0.22), V(xr-0.06,0.50,s*0.22), 0.16, 0.16, mFan); }); }
+      if (def.sideRad) {}
+      else if (def.rearEngine) S.forEach(s=>tube(g, [V(xr-0.02,0.45,s*0.30), V(xr-0.30,0.30,s*0.30), V(fw,0.21,s*0.26), V(axR+0.60,0.21,s*0.26), V(engX+0.30,0.30,s*0.22), V(engX+0.18,0.45,s*0.18)], 0.02, mHose, 90));
+      else { tube(g, [V(xr-0.02,0.63,0.32), V(xr-0.25,0.70,0.28), V(engX+0.10,0.70,0.22)], 0.02, mHose, 24);
+      tube(g, [V(xr-0.02,0.36,-0.32), V(xr-0.25,0.33,-0.25), V(engX+0.08,0.36,-0.20)], 0.02, mHose, 24); }
+      box(g, V(axF+0.25,0.72,-0.58), 0.12, 0.14, 0.10, mRes);
+      tube(g, [V(axF+0.25,0.65,-0.58), V(xr-0.1,0.66,-0.40), V(xr-0.02,0.64,-0.36)], 0.007, mHose, 20);
+    }
+    { const g = part('ac','ac','ระบบแอร์','คอมเพรสเซอร์อัดน้ำยาแอร์ส่งไปคายความร้อนที่แผงคอนเดนเซอร์หน้าหม้อน้ำ แล้วไปขยายตัวเย็นที่ตู้แอร์ (evaporator) หลังแผงหน้าปัด'
+        + (hyb||ev ? ' รุ่นไฮบริดและไฟฟ้าใช้คอมเพรสเซอร์ไฟฟ้า แอร์จึงทำงานได้แม้เครื่องยนต์ดับ' : (def.rearEngine && !def.mid) ? ' เครื่องยนต์วางท้าย จึงใช้คอมเพรสเซอร์ไฟฟ้าไว้ด้านหน้าใกล้คอนเดนเซอร์ (ค่าสมมติ)' : ' คอมเพรสเซอร์หมุนด้วยสายพานจากเครื่องยนต์'), V(fw-0.25, 0.80, -0.10));
+      box(g, V(xr+0.035,0.50,0), 0.015, 0.30, 0.86, mAC);
+      const comp = (def.rearEngine && !def.mid) ? V(axF+0.32, 0.46, -0.34) : V(engX+0.20, 0.36, -0.16);
+      cyl(g, comp.clone().add(new THREE.Vector3(0,0,-0.08)), comp.clone().add(new THREE.Vector3(0,0,0.08)), 0.06, 0.06, mAC);
+      tube(g, [comp.clone().add(new THREE.Vector3(0.04,0.05,0)), V(xr-0.15,0.55,-0.30), V(xr+0.03,0.62,-0.40)], 0.008, mAC, 30);
+      const evap = V(fw-0.25, 0.66, -0.10); box(g, evap, 0.26, 0.20, 0.30, M('#3a3f45',{metalness:0.2, roughness:0.7}));
+      tube(g, [V(xr+0.03,0.38,-0.40), V(fw+0.20,0.62,-0.34), V(fw+0.02,0.66,-0.22), evap.clone().add(new THREE.Vector3(0.13,0,-0.06))], 0.006, mAC, 40);
+      tube(g, [evap.clone().add(new THREE.Vector3(0.13,-0.04,0.02)), V(fw+0.05,0.60,-0.16), (def.rearEngine && !def.mid) ? V(axF+0.10,0.52,-0.30) : V(engX-0.05,0.45,-0.18), comp.clone().add(new THREE.Vector3(-0.04,0.05,0))], 0.009, mAC, 40);
+    }
+
+    root.updateMatrixWorld(true);
+    parts.forEach(p=>{ if (!p.anchor){ const b = new THREE.Box3().setFromObject(groups[p.k]); p.anchor = new THREE.Vector3((b.min.x+b.max.x)/2, b.max.y, (b.min.z+b.max.z)/2); } });
+    return { root, layers, groups, parts, mats, biw };
+  }
+  function disposeCar(c){
+    scene.remove(c.group);
+    if (c.chassis) c.chassis.mats.forEach(m=>m.dispose());
+    c.group.traverse(o=>{ if (o.geometry && o.geometry.dispose) o.geometry.dispose(); });
+    c.mats.forEach(m=>m.dispose());
+  }
+
+  // ---- overlays -------------------------------------------------------------------------------------
+  const overlay = $('overlay'), dimsvg = $('dimsvg');
+  let labels = {}, chLabels = {};
+  function buildLabels(){
+    Object.values(labels).forEach(el=>el.remove()); labels = {};
+    Object.values(chLabels).forEach(el=>el.remove()); chLabels = {};
+    cur.chassis.parts.forEach(p=>{
+      const el = document.createElement('button'); el.className='plabel'; el.type='button'; el.hidden = true;
+      el.textContent = p.th.split(' (')[0]; el.addEventListener('click', ()=>selectChassis(p.k)); overlay.appendChild(el); chLabels[p.k] = el;
+    });
+    cur.trim.parts.forEach(p=>{
+      const el = document.createElement('button'); el.className='plabel'; el.type='button'; el.hidden = true;
+      el.textContent = p.th.split(' (')[0]; el.addEventListener('click', ()=>selectPart(p.k)); overlay.appendChild(el); labels[p.k] = el;
+    });
+  }
+  const dimEls = {};
+  ['L','WB','H','W','TR'].forEach(k=>{ const el=document.createElement('div'); el.className='dim'; el.hidden=true; overlay.appendChild(el); dimEls[k]=el; });
+
+  let mode = 'show', mix = {blue:0, eng:0, chas:0}, target = {blue:0, eng:0, chas:0}, view = 'side', selPart = null;
+  const _v = new THREE.Vector3();
+  function toScreen(x,y,z){ _v.set(x,y,z).project(camera); const r = canvas.getBoundingClientRect(); return [(_v.x+1)/2*r.width, (1-_v.y)/2*r.height, _v.z]; }
+
+  function drawDims(){
+    const on = mix.blue > 0.6;
+    Object.values(dimEls).forEach(e=>e.hidden = true);
+    if (!on){ dimsvg.innerHTML=''; return; }
+    const d = cur.def.dims, sh = cur.sh, L2=sh.L/2, H=d.H/1000, Wd=sh.W/2, zs = Wd+0.12;
+    const tr = cur.trim.track, lines = [];
+    const add = (k, a, b, label) => {
+      const A = toScreen(...a), B = toScreen(...b);
+      lines.push('<line x1="'+A[0]+'" y1="'+A[1]+'" x2="'+B[0]+'" y2="'+B[1]+'" stroke="#cfe3ff" stroke-width="1" marker-start="url(#ar)" marker-end="url(#ar)"/>');
+      const el = dimEls[k]; el.hidden = false; el.style.left = ((A[0]+B[0])/2)+'px'; el.style.top = ((A[1]+B[1])/2)+'px'; el.textContent = label;
+    };
+    const wbLab = 'WB '+(cur.def.approx.WB?'≈':'')+fmt(d.WB);
+    if (view==='side' || view==='iso'){
+      add('L', [-L2, -0.10, zs], [L2, -0.10, zs], fmt(d.L));
+      add('WB', [sh.off+sh.axles[0], 0.04, zs], [sh.off+sh.axles[1], 0.04, zs], wbLab);
+      add('H', [L2+0.25, 0, zs], [L2+0.25, H, zs], fmt(d.H));
+      if (view==='iso') add('W', [L2+0.25, 0.02, -Wd], [L2+0.25, 0.02, Wd], fmt(d.W));
+    } else if (view==='top'){
+      add('L', [-L2, 0, Wd+0.25], [L2, 0, Wd+0.25], fmt(d.L));
+      add('W', [L2+0.25, 0, -Wd], [L2+0.25, 0, Wd], fmt(d.W));
+      add('WB', [sh.off+sh.axles[0], 0, -Wd-0.25], [sh.off+sh.axles[1], 0, -Wd-0.25], wbLab);
+    } else {
+      add('W', [L2, -0.1, -Wd], [L2, -0.1, Wd], fmt(d.W));
+      if (tr) add('TR', [L2, 0.12, -tr[0]/2000], [L2, 0.12, tr[0]/2000], 'TRACK '+fmt(tr[0]));
+      add('H', [L2, 0, Wd+0.25], [L2, H, Wd+0.25], fmt(d.H));
+    }
+    dimsvg.innerHTML = '<defs><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,2 L10,5 L0,8 z" fill="#cfe3ff"/></marker></defs>'+lines.join('');
+  }
+  function drawLabels(){
+    const on = mix.eng > 0.6;
+    cur.trim.parts.forEach(p=>{
+      const el = labels[p.k], g = cur.partGroups[p.k];
+      if (!el) return;
+      const vis = on && g && (p.k==='battery' ? g.visible : cur.engine.visible);
+      if (!vis){ el.hidden = true; return; }
+      const box = new THREE.Box3().setFromObject(g), c = box.getCenter(new THREE.Vector3());
+      const s = toScreen(c.x, box.max.y, c.z);
+      el.hidden = false; el.style.left = s[0]+'px'; el.style.top = s[1]+'px';
+      el.classList.toggle('on', selPart===p.k);
+    });
+    const onc = mix.chas > 0.6, focusKeys = state.focus==null ? [] : CH_TABS.find(x=>x.id===state.ctab).toggles[state.focus].keys;
+    cur.chassis.parts.forEach(p=>{
+      const el = chLabels[p.k]; if (!el) return;
+      if (!onc || !state.layers[p.layer] || !(focusKeys.includes(p.layer) || selPart===p.k)){ el.hidden = true; return; }
+      const s = toScreen(p.anchor.x, p.anchor.y, p.anchor.z);
+      el.hidden = s[2] > 1; el.style.left = s[0]+'px'; el.style.top = s[1]+'px';
+      el.classList.toggle('on', selPart===p.k);
+    });
+  }
+  const hiMat = m => { const c = m.clone(); if (c.emissive){ c.emissive = new THREE.Color(0xe0303c); c.emissiveIntensity = 0.85; } else c.color = new THREE.Color(0xff6a6a); if (c.transparent){ c.opacity = Math.max(c.opacity, 0.85); c.depthWrite = true; } return c; };
+  function resetHighlight(){ cur.group.traverse(o=>{ if (o.isMesh && o.userData.baseMat) o.material = o.userData.baseMat; }); }
+  function hiliteBy(test){ cur.group.traverse(o=>{ if (o.isMesh && o.userData.baseMat) o.material = test(o) ? hiMat(o.userData.baseMat) : o.userData.baseMat; }); }
+  function showPop(title, text, mat, sx, sy){
+    const pop = $('pop'); $('popT').textContent = title; $('popD').textContent = text;
+    $('popM').hidden = !mat; $('popM').textContent = mat ? 'วัสดุ: '+mat : '';
+    pop.hidden = false;
+    const r = canvas.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+    let x = sx+14, y = sy+14;
+    if (x+w > r.width-8) x = sx-w-14;
+    if (y+h > r.height-8) y = r.height-h-8;
+    pop.style.left = Math.max(8, x)+'px'; pop.style.top = Math.max(8, y)+'px';
+  }
+  function hidePop(){ $('pop').hidden = true; }
+  function markChips(){ document.querySelectorAll('#chFocus [data-chk],#chFocus [data-ek]').forEach(b=>b.classList.toggle('on', (b.dataset.chk||b.dataset.ek)===selPart)); }
+  function clearSelection(){ selPart = null; if (cur) resetHighlight(); hidePop(); markChips(); }
+  function selectChassis(k, at){
+    const p = cur.chassis.parts.find(x=>x.k===k); if (!p) return;
+    selPart = k; hiliteBy(o=>o.userData.chk===k);
+    const xy = at || toScreen(p.anchor.x, p.anchor.y, p.anchor.z);
+    showPop(p.th, p.text, null, xy[0], xy[1]); markChips();
+  }
+  function selectPart(k, at){
+    const p = cur.trim.parts.find(x=>x.k===k); if (!p) return;
+    selPart = k; hiliteBy(o=>o.userData.part===k && !o.userData.chk);
+    let xy = at;
+    if (!xy){ const g = cur.partGroups[k], b = new THREE.Box3().setFromObject(g), c = b.getCenter(new THREE.Vector3()); xy = toScreen(c.x, b.max.y, c.z); }
+    showPop(p.th, p.text, p.mat, xy[0], xy[1]); markChips();
+    if (mode==='eng') $('partCard').hidden = true;
+  }
+
+  // ---- modes & camera ---------------------------------------------------------------------------------
+  let camTween = null;
+  function flyCam(pos, tgt, dur){
+    camTween = { p0:camera.position.clone(), t0:controls.target.clone(), p1:new THREE.Vector3(...pos), t1:new THREE.Vector3(...tgt), s:performance.now(), d: reduce?1:(dur||1200) };
+  }
+  function fitDist(span){ const a = Math.min(camera.aspect, 16/9); return span/(2*Math.tan(THREE.MathUtils.degToRad(16))*a)*1.08; }
+  function viewPose(v){
+    const L = cur.sh.L;
+    if (v==='side') return [[0,0.8,Math.max(9.2, fitDist(L+1.0))],[0,0.62,0]];
+    if (v==='top') return [[0.01,Math.max(10.5, fitDist(L+1.0)),0.01],[0,0,0]];
+    if (v==='front') return [[Math.max(9.2, fitDist(2.8)),0.75,0],[0,0.62,0]];
+    return [[6.5,4.2,6.5],[0,0.55,0]];
+  }
+  function showPose(){ const d = Math.max(9.4, fitDist(cur.sh.L+0.6)*0.95), a = Math.atan2(6.8,6.6); return [[Math.cos(a)*d*0.7, 1.9, Math.sin(a)*d*0.7+0.001],[0,0.6,0]]; }
+  function enginePose(){ const x = cur.sh.off+cur.engX, sg = cur.def.rearEngine ? -1 : 1; return [[x+2.6*sg, 2.1, 3.6],[x, 0.6, 0]]; }
+  const CVIEW_LABEL = { iso:'ISO', under:'ใต้ท้อง', side:'SIDE', top:'TOP', front:'ด้านหน้า', wf:'ล้อหน้า', wr:'ล้อหลัง', bay:'ห้องเครื่อง' };
+  let cview = 'iso';
+  const curTab = () => CH_TABS.find(x=>x.id===state.ctab);
+  function chasPose(v){
+    const sh = cur.sh, L = sh.L, trk = (cur.trim.track || [1530,1530]).map(x=>x/2000), fx = sh.off+sh.axles[1], rx = sh.off+sh.axles[0];
+    if (v==='under') return [[2.6,-3.4,3.2],[0,0.25,0]];
+    if (v==='side') return [[0,0.5,Math.max(8.6, fitDist(L+0.8))],[0,0.45,0]];
+    if (v==='top') return [[0.01,Math.max(10, fitDist(L+0.8)),0.01],[0,0.3,0]];
+    if (v==='front') return [[L/2+2.9,1.6,2.7],[L/2-0.9,0.45,0]];
+    if (v==='wf') return [[fx+1.4,0.95,trk[0]+1.9],[fx,0.40,trk[0]-0.30]];
+    if (v==='wr') return [[rx-1.4,0.95,trk[1]+1.9],[rx,0.40,trk[1]-0.30]];
+    if (v==='bay'){ const ex = sh.off+cur.engX, sg = cur.def.rearEngine ? -1 : 1; return [[ex+1.9*sg,1.9,1.8],[ex,0.55,0]]; }
+    return [[4.9,3.0,5.2],[0,0.4,0]];
+  }
+  function renderCViews(){
+    const tab = curTab(); if (!tab.views.includes(cview)) cview = tab.views[0];
+    $('tChas').innerHTML = tab.views.map(v=>'<button class="tbtn'+(v===cview?' on':'')+'" data-cview="'+v+'">'+CVIEW_LABEL[v]+'</button>').join('');
+    $('tChas').querySelectorAll('[data-cview]').forEach(b=>b.addEventListener('click', ()=>setCView(b.dataset.cview)));
+  }
+  function setCView(v){ cview = v; renderCViews(); const p = chasPose(cview); flyCam(p[0], p[1], 1100); }
+  function applyGrade(){
+    if (!cur) return;
+    const B = cur.chassis.biw, gr = state.grade, col = (m,c)=>m.color.set(c).convertSRGBToLinear();
+    col(B.uhss, gr?'#c8423f':'#a9b0b7'); col(B.ahss, gr?'#c9a24f':'#b4bac0'); col(B.mild, gr?'#8a96a3':'#a1a8af');
+    const solid = state.ctab==='biw'; B.mild.opacity = solid ? 0.96 : 0.4; B.mild.depthWrite = solid;
+  }
+  function applyLayers(){
+    if (!cur) return;
+    const ch = mode==='chas', t = cur.trim, Lr = state.layers;
+    cur.chassis.root.visible = ch;
+    Object.entries(cur.chassis.layers).forEach(([k,g])=>g.visible = !!Lr[k]);
+    if (ch){
+      cur.engine.visible = t.kind!=='ev' && Lr.engine;
+      cur.extras.forEach(e=>e.visible = Lr.hv);
+      if (cur.pack) cur.pack.visible = (!!t.pack || t.kind==='ev') && Lr.hv;
+      if (cur.motor) cur.motor.visible = t.kind==='ev' && (Lr.engine || Lr.drive);
+    }
+    applyGrade();
+  }
+  hooks.ctab = ()=>{ applyLayers(); syncGLB(); if (mode==='chas'){ cview = curTab().views[0]; setCView(cview); } };
+  hooks.grade = ()=>applyGrade();
+  hooks.renderFocus = ()=>{
+    const box = $('chFocus'), tab = curTab(), tg = state.focus==null ? null : tab.toggles[state.focus];
+    if (!tg || !cur){ box.innerHTML = '<span class="chhint">กดการ์ดระบบด้านบนเพื่อดูชื่อชิ้นส่วนเฉพาะระบบนั้น หรือคลิกชิ้นส่วนบนโมเดลโดยตรง</span>'; return; }
+    const parts = cur.chassis.parts.filter(p=>tg.keys.includes(p.layer));
+    const eng = tg.keys.includes('engine') && cur.trim.kind!=='ev' ? cur.trim.parts : [];
+    const chip = (attr, p) => '<button type="button" '+attr+'="'+p.k+'">'+p.th.split(' (')[0]+'</button>';
+    box.innerHTML = '<b>'+tg.th+'</b>' + ((parts.length+eng.length) ? '<div class="chips">'+parts.map(p=>chip('data-chk',p)).join('')+eng.map(p=>chip('data-ek',p)).join('')+'</div>' : '<span class="chhint">ไม่มีชิ้นส่วนนี้ในรุ่นที่เลือก</span>');
+    box.querySelectorAll('[data-chk]').forEach(b=>b.addEventListener('click',()=>selectChassis(b.dataset.chk)));
+    box.querySelectorAll('[data-ek]').forEach(b=>b.addEventListener('click',()=>selectPart(b.dataset.ek)));
+    markChips();
+  };
+
+  // click or hover a part on the model to see what it is
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const shown = o => { for (; o; o = o.parent) if (!o.visible) return false; return true; };
+  function pick(cx, cy){
+    if (!cur || !(mode==='chas' || mode==='eng')) return null;
+    const r = canvas.getBoundingClientRect(); ndc.set((cx-r.left)/r.width*2-1, -((cy-r.top)/r.height)*2+1);
+    ray.setFromCamera(ndc, camera);
+    const targets = [cur.engine].concat(cur.extras); if (mode==='chas') targets.push(cur.chassis.root);
+    let behindGlass = null;
+    for (const h of ray.intersectObjects(targets, true)){
+      const o = h.object; if (!shown(o)) continue;
+      const hit = o.userData.chk ? { ch:true, k:o.userData.chk } : o.userData.part ? { ch:false, k:o.userData.part } : null;
+      if (!hit) continue;
+      const m = o.material; if (m && m.transparent && m.opacity < 0.6){ if (!behindGlass) behindGlass = hit; continue; }
+      return hit;
+    }
+    return behindGlass;
+  }
+  const nameOf = h => { const p = h.ch ? cur.chassis.parts.find(x=>x.k===h.k) : cur.trim.parts.find(x=>x.k===h.k); return p ? p.th.split(' (')[0] : ''; };
+  let down = null, lastMove = 0;
+  canvas.addEventListener('pointerdown', e=>{ down = { x:e.clientX, y:e.clientY, t:performance.now() }; });
+  canvas.addEventListener('pointerup', e=>{
+    if (!down) return;
+    const moved = Math.hypot(e.clientX-down.x, e.clientY-down.y), dt = performance.now()-down.t; down = null;
+    if (moved > 6 || dt > 600 || !(mode==='chas' || mode==='eng')) return;
+    const h = pick(e.clientX, e.clientY), r = canvas.getBoundingClientRect(), at = [e.clientX-r.left, e.clientY-r.top];
+    $('tip').hidden = true;
+    if (!h){ clearSelection(); return; }
+    if (h.ch) selectChassis(h.k, at); else selectPart(h.k, at);
+  });
+  canvas.addEventListener('pointermove', e=>{
+    const tip = $('tip');
+    if (e.buttons || e.pointerType==='touch' || !(mode==='chas' || mode==='eng')){ tip.hidden = true; return; }
+    const now = performance.now(); if (now-lastMove < 50) return; lastMove = now;
+    const h = pick(e.clientX, e.clientY), r = canvas.getBoundingClientRect();
+    canvas.style.cursor = h ? 'pointer' : '';
+    if (h){ tip.hidden = false; tip.textContent = nameOf(h); tip.style.left = (e.clientX-r.left)+'px'; tip.style.top = (e.clientY-r.top)+'px'; }
+    else tip.hidden = true;
+  });
+  canvas.addEventListener('pointerleave', ()=>{ $('tip').hidden = true; canvas.style.cursor = ''; });
+  $('popX').addEventListener('click', clearSelection);
+  function setMode(m){
+    mode = m;
+    [['mShow','show'],['mBlue','blue'],['mEng','eng'],['mChas','chas']].forEach(([id,k])=>{ const on = k===m; $(id).classList.toggle('on',on); $(id).setAttribute('aria-selected', on); });
+    $('tShow').hidden = m!=='show'; $('tBlue').hidden = m!=='blue'; $('tEng').hidden = m!=='eng'; $('tChas').hidden = m!=='chas'; $('chPanel').hidden = m!=='chas';
+    target.blue = m==='blue' ? 1 : 0; target.eng = m==='eng' ? 1 : 0; target.chas = m==='chas' ? 1 : 0;
+    controls.autoRotate = m==='show' && !reduce;
+    controls.maxPolarAngle = m==='chas' ? Math.PI*0.97 : Math.PI*0.495;
+    controls.minDistance = m==='chas' ? 1.2 : 3;
+    clearSelection();
+    if (m==='blue'){ setView(view); $('partCard').hidden = true; }
+    else if (m==='eng'){ showEngine(); const p = enginePose(); flyCam(p[0], p[1], 1300); }
+    else if (m==='chas'){ $('partCard').hidden = true; setCView(cview); }
+    else { const p = showPose(); flyCam(p[0], p[1], 1200); $('partCard').hidden = true; }
+    $('hint').textContent = m==='blue' ? 'เลือกมุม SIDE / TOP / FRONT / ISO · มิติเป็นมิลลิเมตร' : m==='eng' ? 'เลื่อน “แยกชิ้น” แล้วคลิกป้ายหรือชิ้นส่วนเพื่ออ่าน' : m==='chas' ? 'คลิกชิ้นส่วนบนโมเดลเพื่อดูว่าคืออะไร · กดการ์ดระบบใต้ภาพเพื่อดูชื่อชิ้นส่วน' : 'ลากเพื่อหมุน · ล้อเมาส์เพื่อซูม';
+    applyLayers(); syncGLB();
+  }
+
+  // ---- detailed models (glTF, CC BY 4.0) ------------------------------------------------------------
+  const glbHolder = new THREE.Group(); scene.add(glbHolder);
+  const glbCache = {};
+  const bpFill = new THREE.MeshBasicMaterial({ color:new THREE.Color('#174a80').convertSRGBToLinear(), polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1, side:THREE.DoubleSide });
+  const glbEdgeMat = new THREE.LineBasicMaterial({ color:0xcfe3ff, transparent:true, opacity:0.85 });
+  // quantized/interleaved attributes -> plain Float32 so EdgesGeometry and bounds read real coordinates
+  function toFloat(attr){
+    if (!attr) return attr;
+    const inter = !!attr.isInterleavedBufferAttribute, arr = inter ? attr.data.array : attr.array;
+    if (!inter && arr instanceof Float32Array) return attr;
+    const d = !attr.normalized ? 1 : arr instanceof Int16Array ? 32767 : arr instanceof Uint16Array ? 65535 : arr instanceof Int8Array ? 127 : arr instanceof Uint8Array ? 255 : 1;
+    const f = v => attr.normalized ? Math.max(v/d, -1) : v, n = attr.count, sz = attr.itemSize, out = new Float32Array(n*sz);
+    for (let i=0;i<n;i++){ out[i*sz] = f(attr.getX(i)); if (sz>1) out[i*sz+1] = f(attr.getY(i)); if (sz>2) out[i*sz+2] = f(attr.getZ(i)); }
+    return new THREE.BufferAttribute(out, sz);
+  }
+  async function fetchWithProgress(url, onPct){
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const total = +res.headers.get('content-length') || 0;
+    if (!res.body || !res.body.getReader) return await res.arrayBuffer();
+    const reader = res.body.getReader(), chunks = []; let got = 0;
+    for (;;){ const { done, value } = await reader.read(); if (done) break; chunks.push(value); got += value.length; if (total) onPct(Math.round(got/total*100)); }
+    const buf = new Uint8Array(got); let o = 0; chunks.forEach(c=>{ buf.set(c, o); o += c.length; });
+    return buf.buffer;
+  }
+  function parseGLTF(buf){
+    return new Promise((resolve, reject)=>{
+      // The artifact frame blocks fetch() of blob: URLs, which the ImageBitmap path uses for embedded textures.
+      // Hiding createImageBitmap while the parser is constructed makes GLTFLoader use <img> loading instead.
+      const cib = window.createImageBitmap;
+      try { window.createImageBitmap = undefined; } catch(e){}
+      try { new THREE.GLTFLoader().parse(buf, '', resolve, reject); }
+      catch(err){ reject(err); }
+      finally { try { window.createImageBitmap = cib; } catch(e){} }
+    });
+  }
+  async function loadGLB(id){
+    const spec = GLB[id]; if (!spec || glbCache[id]) return;
+    const entry = glbCache[id] = { state:'loading', pct:0 };
+    try {
+      const buf = await fetchWithProgress(spec.file, p=>{ entry.pct = p; if (state.car.id===id) syncGLB(); });
+      entry.pct = 100; if (state.car.id===id) syncGLB();
+      const gltf = await parseGLTF(buf);
+      const model = gltf.scene, holder = new THREE.Group(), paints = [], meshes = [], ghostOf = new Map();
+      model.rotation.y = Math.PI/2;                // model faces +z, KritRod faces +x
+      holder.add(model);
+      model.traverse(o=>{ if (o.isMesh){
+        o.geometry.setAttribute('position', toFloat(o.geometry.getAttribute('position')));
+        const m = o.material;
+        if (spec.hide && spec.hide.test(m.name)){ o.visible = false; return; }
+        if (spec.tint && spec.tint.test(m.name)){ m.map = null; m.color.set(0x0b0f14); m.opacity = 0.82; m.transparent = true; }
+        if (spec.renormal && spec.paint.includes(m.name)){ o.geometry.deleteAttribute('normal'); o.geometry.computeVertexNormals(); }
+        o.castShadow = true; o.receiveShadow = !(spec.noSelfShadow && spec.paint.includes(m.name)); meshes.push(o);
+        if (spec.paint.includes(m.name) && !paints.includes(m)){ paints.push(m); m.metalness = 0.45; m.roughness = 0.35; if (m.envMapIntensity!==undefined) m.envMapIntensity = 0.9; }
+        if (!ghostOf.has(m)){ const g = m.clone(); g.transparent = true; g.opacity = 0.13; g.depthWrite = false; ghostOf.set(m, g); }
+        o.userData.orig = m; o.userData.ghost = ghostOf.get(m);
+      } });
+      holder.updateMatrixWorld(true);
+      let box = new THREE.Box3().setFromObject(holder), size = box.getSize(new THREE.Vector3());
+      const k = (CARS.find(c=>c.id===id).dims.L/1000) / size.x;
+      model.scale.multiplyScalar(k); holder.updateMatrixWorld(true);
+      box = new THREE.Box3().setFromObject(holder); const ctr = box.getCenter(new THREE.Vector3());
+      model.position.x -= ctr.x; model.position.z -= ctr.z; model.position.y -= box.min.y;
+      if (spec.drl){ holder.updateMatrixWorld(true); addDRL(holder, meshes); }
+      Object.assign(entry, { group:holder, paints, meshes, state:'ready' });
+    } catch(err){
+      console.error('KritRod: detailed model failed', spec.file, err);
+      entry.state = 'error'; entry.msg = (err && err.message) ? err.message : String(err);
+    }
+    if (state.car.id===id) syncGLB();
+  }
+  // Y-shaped daytime running lights: blank out the donor car's lamps, then project a new light signature onto the lamp glass
+  function addDRL(holder, meshes){
+    const lamps = meshes.filter(o=>/Emissive_Light_Front|Glass_Emissive_Front/.test(o.material.name));
+    if (!lamps.length) return;
+    lamps.forEach(o=>{
+      const m = o.material.clone(); m.map = null; m.color = new THREE.Color(0x0e1013);
+      if (m.emissive) m.emissive.set(0x000000); m.metalness = 0.6; m.roughness = 0.15;
+      if (/Glass/.test(o.material.name)){ m.transparent = true; m.opacity = 0.5; }
+      o.material = m; o.userData.orig = m;
+    });
+    const targets = meshes.filter(o=>!/Tyre|RIM|Disc|CALIPER/.test(o.material.name));
+    const drlM = new THREE.MeshBasicMaterial({ color:0xf4f8ff, side:THREE.DoubleSide });
+    const drlGhost = new THREE.MeshBasicMaterial({ color:0xf4f8ff, side:THREE.DoubleSide, transparent:true, opacity:0.35, depthWrite:false });
+    const rc = new THREE.Raycaster(), dir = new THREE.Vector3(-1,0,0), nm = new THREE.Matrix3();
+    [1,-1].forEach(sd=>{
+      const v = new THREE.Vector3(); let u0 = 9, u1 = 0, v0 = 9, v1 = -9, xm = -9;
+      lamps.forEach(o=>{ const pa = o.geometry.attributes.position; for (let i=0;i<pa.count;i+=2){ v.fromBufferAttribute(pa,i).applyMatrix4(o.matrixWorld);
+        if (Math.sign(v.z)!==sd || Math.abs(v.z) < 0.1) continue; const az = Math.abs(v.z); u0 = Math.min(u0,az); u1 = Math.max(u1,az); v0 = Math.min(v0,v.y); v1 = Math.max(v1,v.y); xm = Math.max(xm,v.x); } });
+      if (u1 <= u0) return;
+      const fx = xm + 1;
+      const node = [0.45, 0.55], strokes = [[node,[1.0,0.85]], [node,[0.02,0.90]], [node,[0.30,0.06]]];
+      strokes.forEach(([a,b])=>{
+        const pts = [];
+        for (let i=0;i<=26;i++){
+          const t = i/26, la = a[0]+(b[0]-a[0])*t, lb = a[1]+(b[1]-a[1])*t;
+          rc.set(new THREE.Vector3(fx, v0+(v1-v0)*lb, sd*(u0+(u1-u0)*la)), dir);
+          const h = rc.intersectObjects(targets, false)[0]; if (!h) continue;
+          nm.getNormalMatrix(h.object.matrixWorld); const n = h.face.normal.clone().applyMatrix3(nm).normalize(); if (n.x < 0) n.negate();
+          pts.push({ p:h.point.clone().addScaledVector(n, 0.004), n });
+        }
+        if (pts.length < 2) return;
+        const pos = [], idx = [];
+        pts.forEach((q,i)=>{
+          const nb = pts[Math.min(i+1, pts.length-1)].p, pb = pts[Math.max(i-1, 0)].p, tg = nb.clone().sub(pb).normalize();
+          const side = new THREE.Vector3().crossVectors(tg, q.n).normalize().multiplyScalar(0.008);
+          const l = q.p.clone().add(side), r = q.p.clone().sub(side); pos.push(l.x,l.y,l.z, r.x,r.y,r.z);
+        });
+        for (let i=0;i<pts.length-1;i++){ const k = i*2; idx.push(k,k+1,k+2, k+1,k+3,k+2); }
+        const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); geo.setIndex(idx);
+        const mesh = new THREE.Mesh(geo, drlM); mesh.userData.orig = drlM; mesh.userData.ghost = drlGhost;
+        holder.add(mesh); meshes.push(mesh);
+      });
+    });
+  }
+  function buildEdges(e){
+    e.edges = [];
+    e.meshes.forEach(o=>{ const ls = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 24), glbEdgeMat); ls.raycast = ()=>{}; o.add(ls); e.edges.push(ls); });
+  }
+  function setGLBLook(e){
+    if (mode==='blue' && !e.edges && !e.edgesPending){
+      e.edgesPending = true;
+      setTimeout(()=>{ buildEdges(e); e.edgesPending = false; syncGLB(); }, 40);
+    }
+    e.meshes.forEach(o=>{ o.material = mode==='blue' ? bpFill : (mode==='eng' || mode==='chas') ? o.userData.ghost : o.userData.orig; o.castShadow = mode==='show'; });
+    e.group.visible = !(mode==='chas' && !state.layers.shell);
+    if (e.edges) e.edges.forEach(l=>l.visible = mode==='blue');
+  }
+  function applyGLBPaint(){
+    const e = glbCache[state.car.id]; if (!e || e.state!=='ready') return;
+    const hex = state.car.paints[state.paint[state.car.id]][0];
+    e.paints.forEach(m=>m.color.set(hex).convertSRGBToLinear());
+  }
+  function syncGLB(){
+    const id = state.car.id, spec = GLB[id];
+    if (spec && state.detail) loadGLB(id);
+    const e = glbCache[id], want = !!spec && state.detail;
+    const on = want && e && e.state==='ready';
+    glbHolder.children.slice().forEach(ch=>glbHolder.remove(ch));
+    if (on){ glbHolder.add(e.group); applyGLBPaint(); setGLBLook(e); }
+    if (cur) cur.group.children.forEach(ch=>{ if (ch.userData.procBody) ch.visible = !on && !(mode==='chas' && !state.layers.shell); });
+    const ld = $('loading');
+    if (want && e && e.state==='loading'){ ld.hidden = false; ld.textContent = 'กำลังโหลดโมเดลละเอียด '+(e.pct?e.pct+'%':'…'); }
+    else if (want && e && e.state==='error'){ ld.hidden = false; ld.textContent = 'โหลดโมเดลละเอียดไม่สำเร็จ ('+e.msg+') จึงแสดงโมเดลโค้ดแทน'; }
+    else if (on && e.edgesPending){ ld.hidden = false; ld.textContent = 'กำลังวาดเส้น blueprint จากโมเดลละเอียด…'; }
+    else ld.hidden = true;
+    const cr = $('credit');
+    if (on){ cr.hidden = false; cr.innerHTML = 'โมเดล: <a href="'+spec.url+'" target="_blank" rel="noopener">'+spec.title+'</a> โดย '+spec.by+(spec.mod?' ('+spec.mod+')':'')+' · <a href="'+(spec.lic?spec.lic[1]:'https://creativecommons.org/licenses/by/4.0/')+'" target="_blank" rel="noopener">'+(spec.lic?spec.lic[0]:'CC BY 4.0')+'</a>'; }
+    else cr.hidden = true;
+  }
+  hooks.paint = ()=>{ if (cur) cur.paint.color.set(state.car.paints[state.paint[state.car.id]][0]); applyGLBPaint(); };
+  hooks.detail = ()=>syncGLB();
+  hooks.layers = ()=>{ applyLayers(); syncGLB(); };
+  function setView(v){
+    view = v; document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('on', b.dataset.view===v));
+    const p = viewPose(v); flyCam(p[0], p[1], 1100);
+  }
+  function showEngine(){
+    const t = cur.trim, def = cur.def;
+    cur.engine.visible = t.kind!=='ev';
+    cur.extras.forEach(e=>e.visible = true);
+    if (cur.pack) cur.pack.visible = !!t.pack || t.kind==='ev';
+    if (cur.motor) cur.motor.visible = t.kind==='ev';
+    const card = $('partCard');
+    if (t.kind==='ev'){
+      card.hidden = false;
+      card.innerHTML = '<h3>'+t.name+' · ระบบขับเคลื่อนไฟฟ้า</h3><p>รุ่นไฟฟ้าไม่มีเครื่องยนต์ ห้องเครื่องด้านหน้าใช้เป็นที่เก็บของ (frunk) แบตเตอรี่ 82 kWh วางใต้พื้นรถ (สีฟ้า) มอเตอร์ 300 kW อยู่ที่เพลาหลัง</p><span class="mat">เลือกรุ่น KR-1 T หรือ KR-1 H ด้านล่างเพื่อดูเครื่องยนต์แบบแยกชิ้น</span>';
+    } else if (!selPart){
+      card.hidden = false;
+      const hyb = t.kind==='hybrid';
+      card.innerHTML = '<h3>'+def.name+' '+t.name+' · '+(hyb?'ระบบไฮบริด':'เครื่องยนต์')+'</h3><p>'+t.engineTxt+' · '+t.gearTxt+(hyb?' · แบตเตอรี่ไฮบริดแสดงเป็นกล่องสีฟ้าใต้เบาะหลัง':'')+'</p><span class="mat">คลิกป้ายชื่อบนโมเดลเพื่ออ่านรายละเอียดแต่ละชิ้น</span>';
+    }
+  }
+  $('mShow').onclick = ()=>setMode('show'); $('mBlue').onclick = ()=>setMode('blue'); $('mEng').onclick = ()=>setMode('eng'); $('mChas').onclick = ()=>setMode('chas');
+  document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click', ()=>setView(b.dataset.view)));
+  document.querySelectorAll('[data-go]').forEach(a=>a.addEventListener('click', ()=>setMode(a.dataset.go==='blueprint'?'blue':a.dataset.go==='chassis'?'chas':'eng')));
+
+  function rebuild(){
+    if (cur) disposeCar(cur);
+    cur = buildCar(state.car, curTrim());
+    cur.chassis = buildChassis(state.car, curTrim(), cur.sh); cur.group.add(cur.chassis.root);
+    scene.add(cur.group);
+    selPart = null; hidePop(); buildLabels();
+    if (mode==='eng') showEngine();
+    applyLayers(); syncGLB(); hooks.renderFocus();
+  }
+  setCar = id => {
+    const c = CARS.find(x=>x.id===id); if (!c) return;
+    state.car = c; renderText(); rebuild(); $('partCard').hidden = mode!=='eng' || $('partCard').hidden;
+    if (mode==='blue') setView(view); else if (mode==='eng'){ const p = enginePose(); flyCam(p[0], p[1], 900); } else if (mode==='chas') setCView(cview);
+  };
+  setTrim = i => { state.trim[state.car.id] = i; renderText(); rebuild(); };
+  rebuild();
+
+  // ---- render loop ------------------------------------------------------------------------------------
+  function resize(){
+    const r = canvas.getBoundingClientRect();
+    renderer.setSize(r.width, r.height, false);
+    camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize); resize();
+  { const p = showPose(); camera.position.set(...p[0]); controls.target.set(...p[1]); }
+  const explodeIn = $('explode');
+  const tmpC = new THREE.Color();
+  let lastT = performance.now();
+  function loop(now){
+    const dt = Math.min(0.05, (now-lastT)/1000); lastT = now;
+    const k = reduce ? 1 : Math.min(1, dt*4);
+    mix.blue += (target.blue - mix.blue) * k; mix.eng += (target.eng - mix.eng) * k; mix.chas += (target.chas - mix.chas) * k;
+    if (Math.abs(mix.chas-target.chas)<0.002) mix.chas = target.chas;
+    if (Math.abs(mix.blue-target.blue)<0.002) mix.blue = target.blue;
+    if (Math.abs(mix.eng-target.eng)<0.002) mix.eng = target.eng;
+
+    tmpC.copy(SHOW_BG).lerp(BLUE_BG, mix.blue).lerp(ENG_BG, Math.max(mix.eng, mix.chas)*(1-mix.blue));
+    scene.background.copy(tmpC);
+    floor.material.opacity = 1 - mix.blue; floor.material.transparent = mix.blue>0; floor.visible = mix.blue < 0.99 && mix.chas < 0.5;
+    grid.material.opacity = mix.blue*0.18 + mix.chas*0.08;
+    key.intensity = 1.6*(1-mix.blue); hemi.intensity = 0.35 + 0.2*mix.blue;
+
+    const ghost = Math.max(mix.blue, mix.eng*0.86, mix.chas*0.9);
+    cur.mats.forEach(m=>{ const isGlass = m===cur.mats[1]; m.transparent = ghost>0.001 || isGlass; m.opacity = (isGlass?0.9:1)*(1-ghost); m.depthWrite = ghost<0.5; });
+    edgeMat.opacity = Math.max(mix.blue, mix.eng*0.35, mix.chas*0.25);
+    edgeMat.color.set(mix.blue>0.5 ? 0xcfe3ff : 0x8a96a3);
+    if (cur.engine.visible){
+      const e = parseFloat(explodeIn.value) * mix.eng;
+      cur.engine.children.forEach(g=>{ const d = g.userData.dir; if (d) g.position.set(d.x*e*0.5, d.y*e*0.5, d.z*e*0.5); });
+    }
+    if (mix.eng === 0 && mix.chas === 0 && mode!=='eng' && mode!=='chas'){ cur.engine.visible = false; cur.extras.forEach(x=>x.visible=false); if (cur.pack) cur.pack.visible = false; if (cur.motor) cur.motor.visible = false; }
+
+    if (mode==='show' && !reduce) cur.wheels.forEach(w=>w.userData.spin.forEach(s=>s.rotation.z -= dt*1.2));
+
+    if (camTween){
+      const t = Math.min(1, (now - camTween.s)/camTween.d), e = t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+      camera.position.lerpVectors(camTween.p0, camTween.p1, e); controls.target.lerpVectors(camTween.t0, camTween.t1, e);
+      if (t>=1) camTween = null;
+    }
+    controls.update();
+    renderer.render(scene, camera);
+    drawDims(); drawLabels();
+    requestAnimationFrame(loop);
+  }
+  controls.addEventListener('start', ()=>{ camTween = null; });
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
